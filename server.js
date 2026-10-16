@@ -45,18 +45,30 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 
-// กำหนดพาร์ธสำหรับเก็บข้อมูลและสลิป (ใช้ /tmp บน Vercel เพื่อแก้ปัญหา Read-only)
+// กำหนดพาร์ธสำหรับเก็บข้อมูลและสลิป โดยบังคับใช้ /tmp บน Vercel
 const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(__dirname, 'data');
 const SLIP_DIR = process.env.VERCEL ? path.join('/tmp', 'slips') : path.join(DATA_DIR, 'slips');
 
-// ระบบ Lazy Initialization ป้องกันปัญหา SIGABRT บน Serverless
+// ระบบ Lazy Initialization + Smart Copy Database ไปที่ /tmp เพื่อป้องกัน Read-only และข้อมูลหาย
 let _db = null;
 function getDb() {
   if (!_db) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
     fs.mkdirSync(SLIP_DIR, { recursive: true });
-    
-    _db = new Database(path.join(DATA_DIR, 'mumu.db'));
+
+    const targetDbPath = path.join(DATA_DIR, 'mumu.db');
+    const bundledDbPath = path.join(__dirname, 'data', 'mumu.db');
+
+    // ถ้าใน /tmp ยังไม่มีฐานข้อมูล แต่ในโปรเจกต์มี ให้คัดลอกมาใช้งาน
+    if (!fs.existsSync(targetDbPath) && fs.existsSync(bundledDbPath)) {
+      try {
+        fs.copyFileSync(bundledDbPath, targetDbPath);
+      } catch (err) {
+        console.error('Failed to copy bundled db:', err);
+      }
+    }
+
+    _db = new Database(targetDbPath);
     _db.pragma('journal_mode = WAL');
     
     _db.exec(`
@@ -552,7 +564,6 @@ app.get('/admin',(req,res)=>res.sendFile(path.join(__dirname,'public','index.htm
 app.use(express.static(path.join(__dirname,'public')));
 app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 
-// รองรับทั้งรันบน Local และ Vercel Serverless
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, HOST, ()=>console.log(`Mumu Topup-Premium Store\nServer listening on ${HOST}:${PORT}\nOn this PC: http://localhost:${PORT}`));
 }
