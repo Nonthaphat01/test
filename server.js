@@ -59,7 +59,6 @@ function getDb() {
     const targetDbPath = path.join(DATA_DIR, 'mumu.db');
     const bundledDbPath = path.join(__dirname, 'data', 'mumu.db');
 
-    // ถ้าใน /tmp ยังไม่มีฐานข้อมูล แต่ในโปรเจกต์มี ให้คัดลอกมาใช้งาน
     if (!fs.existsSync(targetDbPath) && fs.existsSync(bundledDbPath)) {
       try {
         fs.copyFileSync(bundledDbPath, targetDbPath);
@@ -68,7 +67,6 @@ function getDb() {
       }
     }
 
-    // สำคัญมาก: ปรับสิทธิ์ไฟล์ใน /tmp ให้สามารถอ่านและเขียนได้ (แก้ปัญหาสิทธิ์ Read-only ที่ติดมาจากไฟล์ต้นทาง)
     if (fs.existsSync(targetDbPath)) {
       try {
         fs.chmodSync(targetDbPath, 0o666);
