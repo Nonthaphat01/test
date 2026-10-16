@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mumu Topup-Premium Store - เติมเกม & แอปพรีเมียมครบวงจร</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mumu: {
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            cyan: '#06b6d4',
+                            dark: '#0b0f19',
+                            card: '#111827',
+                            card2: '#1f2937',
+                            border: 'rgba(236, 72, 153, 0.2)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QRCode Generator Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        .mumu-glass {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        .mumu-card {
+            background: linear-gradient(145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.95) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .mumu-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(236, 72, 153, 0.5);
+            box-shadow: 0 10px 30px -5px rgba(236, 72, 153, 0.3);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #8b7cf6; }
+        /* Mumu signature: quiet navy surfaces, restrained lilac accent */
+        .mumu-glass { border-color: rgba(148,163,184,.14); }
+        .mumu-card { border-color: rgba(148,163,184,.12); }
+        .mumu-card:hover { border-color: rgba(167,139,250,.38); box-shadow: 0 12px 28px -12px rgba(139,92,246,.20); }
+        .mumu-drawer-backdrop { position:fixed; inset:0; z-index:70; background:rgba(2,6,23,.64); backdrop-filter:blur(3px); opacity:0; pointer-events:none; transition:opacity .22s ease; }
+        .mumu-drawer { position:fixed; z-index:71; top:0; bottom:0; left:0; width:min(320px,88vw); overflow-y:auto; background:#0e1524; border-right:1px solid rgba(148,163,184,.16); box-shadow:18px 0 55px rgba(0,0,0,.28); transform:translateX(-105%); transition:transform .24s ease; }
+        body.mumu-menu-open .mumu-drawer-backdrop { opacity:1; pointer-events:auto; }
+        body.mumu-menu-open .mumu-drawer { transform:translateX(0); }
+        .mumu-menu-item { display:flex; align-items:center; gap:.8rem; width:100%; padding:.72rem .85rem; border-radius:.85rem; color:#cbd5e1; text-align:left; font-size:.875rem; transition:background .16s,color .16s; }
+        .mumu-menu-item:hover,.mumu-menu-item:focus-visible { background:rgba(148,163,184,.10); color:#fff; outline:none; }
+        .mumu-menu-item i { width:1.2rem; text-align:center; color:#a5b4fc; }
+        @media (prefers-reduced-motion: reduce) { .mumu-drawer,.mumu-drawer-backdrop,.mumu-card { transition:none!important; } }
+    
+
+        /* Mumu cat-inspired storefront theme */
+        /* Hero uses the complete supplied banner artwork as one image.
+           Do not overlay the same artwork as a second giant cat image. */
+        .mumu-hero {
+          position:relative; isolation:isolate; border-color:rgba(129,140,248,.28)!important;
+          background:#090f2b url('/mumu-cat-hero.jpg') center / 100% 100% no-repeat !important;
+          min-height:280px; box-shadow:0 18px 55px rgba(2,4,16,.34),inset 0 0 0 1px rgba(139,92,246,.10);
+        }
+        .mumu-hero > div:first-child { min-height:280px; background:transparent!important; }
+        .mumu-hero > div:first-child > div.absolute { display:none!important; }
+        .mumu-hero-cat { display:none!important; }
+        .mumu-hero .relative.z-10 { max-width:58%; }
+        .mumu-hero h1 { letter-spacing:-.025em; }
+        .mumu-hero .bg-gradient-to-r.from-mumu-purple.to-mumu-pink { background-image:linear-gradient(110deg,#c65ed9,#8b75ed)!important; box-shadow:0 8px 24px rgba(151,95,226,.22)!important; }
+        .mumu-card,.mumu-glass,[class*="rounded-2xl"][class*="border"] { border-color:rgba(129,140,248,.13); }
+        @media(max-width:640px){
+          .mumu-hero { min-height:220px; background-size:100% 100%!important; }
+          .mumu-hero > div:first-child { min-height:220px; padding:1rem!important; }
+          .mumu-hero .relative.z-10 { max-width:58%; }
+          .mumu-hero h1 { font-size:1.25rem; line-height:1.15; }
+          .mumu-hero p { max-width:95%; }
+        }
+
+        /* Mumu full-site night-forest theme: inspired by the supplied visual reference */
+        :root { color-scheme: dark; }
+        html { background:#050918; scroll-behavior:smooth; }
+        body {
+          position:relative; isolation:isolate; color:#eef0ff;
+          background:
+            radial-gradient(ellipse at 74% 0%, rgba(91,55,190,.23), transparent 38%),
+            radial-gradient(ellipse at 12% 26%, rgba(37,67,151,.19), transparent 34%),
+            linear-gradient(180deg, #070b1b 0%, #050a19 52%, #040817 100%) !important;
+        }
+        body::before {
+          content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+          background-image:linear-gradient(180deg,rgba(4,8,23,.72),rgba(4,8,23,.91)),url('/mumu-hero-night.png');
+          background-size:cover; background-position:center top; opacity:.20;
+          filter:saturate(.8) blur(1px);
+        }
+        body::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(ellipse at center,transparent 20%,rgba(2,5,16,.44) 100%); }
+        header.mumu-glass { background:rgba(12,18,31,.94) !important; border-color:rgba(148,163,184,.14) !important; box-shadow:0 8px 28px rgba(0,0,0,.12); }
+        .mumu-glass { background:rgba(9,16,37,.84) !important; border-color:rgba(111,127,232,.19) !important; }
+        .mumu-card { background:linear-gradient(145deg,rgba(15,25,57,.94),rgba(7,14,32,.97)) !important; border:1px solid rgba(99,119,235,.19) !important; box-shadow:0 8px 24px rgba(0,0,0,.10); }
+        .mumu-card:hover { transform:translateY(-2px); border-color:rgba(167,139,250,.38) !important; box-shadow:0 12px 28px -12px rgba(139,92,246,.20) !important; }
+        .gradient-text { background:linear-gradient(120deg,#e2e8f0 0%,#c4b5fd 58%,#a5b4fc 100%) !important; -webkit-background-clip:text !important; background-clip:text !important; }
+        /* Tone down loud pink/cyan surfaces while keeping accent colors readable */
+        .border-mumu-pink\/20,.border-mumu-pink\/30,.border-mumu-pink\/\[0\.2\] { border-color:rgba(148,163,184,.16) !important; }
+        .text-mumu-pink { color:#c4b5fd !important; }
+        .text-mumu-cyan { color:#a5b4fc !important; }
+        .bg-mumu-pink\/20 { background:rgba(167,139,250,.12) !important; }
+        .bg-mumu-pink { background:#8b7bd8 !important; }
+        .border-mumu-pink { border-color:rgba(167,139,250,.3) !important; }
+        .bg-gradient-to-r.from-mumu-purple.to-mumu-pink,
+        .bg-gradient-to-r.from-mumu-purple\/80.to-mumu-pink\/80 { background-image:linear-gradient(135deg,#a855f7,#d946ef 58%,#8b5cf6) !important; }
+        button { -webkit-tap-highlight-color:transparent; }
+        button:not(:disabled) { transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease; }
+        input,select,textarea { background-color:#0d1525 !important; color:#e5e7eb !important; border-color:rgba(148,163,184,.22) !important; border-radius:.8rem !important; }
+        input:focus,select:focus,textarea:focus { outline:none !important; border-color:rgba(167,139,250,.7) !important; box-shadow:0 0 0 3px rgba(139,92,246,.13) !important; }
+        input::placeholder,textarea::placeholder { color:#64748b !important; }
+        [class*="bg-slate-900"],[class*="bg-gray-900"] { --tw-bg-opacity:1; }
+        .mumu-drawer { background:linear-gradient(180deg,rgba(8,15,34,.98),rgba(5,11,26,.99)) !important; border-right-color:rgba(129,140,248,.22) !important; }
+        .mumu-menu-item i { color:#b7a9f5 !important; }
+        .mumu-menu-item:hover,.mumu-menu-item:focus-visible { background:rgba(148,163,184,.10) !important; color:#fff !important; }
+        /* Modal and panel surfaces use the same layered navy as the menu */
+        [role="dialog"], [id*="Modal"], [id*="modal"] { scrollbar-color:#475569 #0b1220; }
+        .shadow-lg,.shadow-xl,.shadow-2xl { --tw-shadow-color:rgba(0,0,0,.22); }
+        ::selection { background:rgba(139,124,246,.45); color:#fff; }
+        @media (max-width:640px) {
+          header .max-w-7xl { padding-left:.75rem !important; padding-right:.75rem !important; }
+          .mumu-card:hover { transform:none; }
+          button { min-height:2.25rem; }
+        }
+        .mumu-hero { background-size:cover !important; background-position:center right !important; background-repeat:no-repeat !important; }
+        .mumu-hero > div:first-child { opacity:1 !important; }
+        .mumu-card,.mumu-glass { backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+        .mumu-card { box-shadow:0 12px 30px rgba(1,4,18,.18), inset 0 1px rgba(255,255,255,.018) !important; }
+        .mumu-card:hover { border-color:rgba(168,85,247,.42) !important; box-shadow:0 14px 32px rgba(91,33,182,.16) !important; }
+        .mumu-menu-item:hover,.mumu-menu-item:focus-visible { background:linear-gradient(100deg,rgba(124,58,237,.25),rgba(99,102,241,.10)) !important; }
+        @media (max-width:640px) { body::before { background-position:60% top; opacity:.13; } }
+        @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+    
+        /* === Reference layout: persistent sidebar, header, scenic hero === */
+        .mumu-topbar { background:rgba(5,10,29,.96)!important; border-bottom-color:rgba(129,140,248,.15)!important; }
+        .mumu-topbar-inner { max-width:none!important; margin-left:0; }
+        .mumu-brand-cat { width:50px;height:50px;flex:0 0 50px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#241b52,#101b3d);border:1px solid rgba(167,139,250,.4);font-size:27px;box-shadow:0 0 22px rgba(139,92,246,.16); }
+        .mumu-header-search input { background:linear-gradient(120deg,#111b3a,#101735)!important;border:1px solid rgba(129,140,248,.14)!important;color:#eef2ff!important; }
+        .mumu-wallet-pill,.mumu-round-action { display:inline-flex;align-items:center;justify-content:center;gap:10px;height:50px;border-radius:999px;background:linear-gradient(145deg,#111b3b,#0c1430);border:1px solid rgba(129,140,248,.13);color:#dbe4ff;padding:0 18px; }
+        .mumu-wallet-pill { white-space:nowrap;font-weight:600;min-width:136px; }
+        .mumu-wallet-pill i { font-size:18px; }
+        .mumu-round-action { width:50px;padding:0;font-size:20px; }
+        .mumu-admin-shortcut { display:none!important; }
+        .mumu-sidebar-desktop { position:fixed;z-index:35;top:94px;bottom:76px;left:20px;width:314px;padding:18px 14px;background:linear-gradient(180deg,rgba(8,16,39,.97),rgba(5,12,29,.98));border:1px solid rgba(129,140,248,.17);border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.24);overflow-y:auto;transition:transform .22s ease,opacity .22s ease,visibility .22s ease; }
+        /* Robust desktop menu toggle: fully remove the fixed sidebar from hit-testing/layout
+           and release the content area when the hamburger is pressed. */
+        body.mumu-sidebar-collapsed #mumuSidebarDesktop { display:none!important; transform:translateX(-120%); opacity:0; visibility:hidden; pointer-events:none; }
+        body.mumu-sidebar-collapsed #customerView { margin-left:28px!important;margin-right:28px!important;width:calc(100% - 56px)!important;max-width:none!important; }
+        body.mumu-sidebar-collapsed #adminView { margin-left:28px!important;margin-right:28px!important;width:calc(100% - 56px)!important;max-width:none!important; }
+        body.mumu-sidebar-collapsed footer { margin-left:0!important; }
+        body.mumu-sidebar-collapsed #mumuMenuButton { background:linear-gradient(145deg,#4c2aa7,#2b1a63); }
+        @media(max-width:760px) { body.mumu-sidebar-collapsed #customerView, body.mumu-sidebar-collapsed #adminView { margin:0!important;width:100%!important; } }
+        .mumu-sidebar-profile { display:flex;align-items:center;gap:12px;padding:4px 4px 20px;border-bottom:1px solid rgba(129,140,248,.18);margin-bottom:16px; }
+        .mumu-sidebar-profile .mumu-brand-cat { width:48px;height:48px;flex-basis:48px;font-size:25px; }
+        .mumu-sidebar-profile strong,.mumu-sidebar-profile span { display:block; }
+        .mumu-sidebar-profile strong { font-size:18px;color:#f8faff; }
+        .mumu-sidebar-profile span { font-size:13px;color:#c0c9e8;white-space:nowrap; }
+        .mumu-sidebar-close { display:none!important; }
+        .mumu-sidebar-nav { display:flex;flex-direction:column;gap:4px; }
+        .mumu-side-link { width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:12px 14px;border-radius:12px;color:#d0d8f2;font-size:15px;transition:background .15s ease,color .15s ease; }
+        .mumu-side-link i { width:22px;text-align:center;color:#b5c2f7;font-size:19px; }
+        .mumu-side-link:hover { background:rgba(129,140,248,.12);color:#fff; }
+        .mumu-side-link.active { background:linear-gradient(110deg,#522bb6,#302071);color:#fff;box-shadow:inset 0 0 0 1px rgba(196,181,253,.08); }
+        .mumu-side-link.active i { color:#fff; }
+        .mumu-sidebar-divider { height:1px;background:rgba(129,140,248,.2);margin:12px 6px; }
+        .mumu-sidebar-heading { color:#f2f4ff;font-weight:700;font-size:15px;padding:2px 10px 4px; }
+        #customerView { max-width:none!important;width:auto!important;margin-left:354px!important;margin-right:28px!important;padding:10px 0 0!important;gap:18px!important; }
+        #adminView { max-width:1280px!important;margin-left:auto!important;margin-right:auto!important; }
+        footer { margin-left:354px; }
+        footer .max-w-7xl { max-width:none!important; }
+        .mumu-hero { min-height:326px!important;height:326px!important;background:#080d26 url('/mumu-hero-night.png') center/cover no-repeat!important;border:1px solid rgba(129,140,248,.25)!important;border-radius:23px!important; }
+        .mumu-hero:after { content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(5,9,28,.22) 0%,rgba(5,9,28,.05) 52%,rgba(5,9,28,.02) 100%);pointer-events:none; }
+        .mumu-hero > div:first-child { min-height:326px!important;height:326px!important;padding:30px!important;position:relative;z-index:1; }
+        .mumu-hero .relative.z-10 { max-width:49%!important; }
+        .mumu-hero h1 { font-size:clamp(2rem,3.5vw,3.5rem)!important;line-height:1.08!important;letter-spacing:-.035em!important; }
+        .mumu-hero .gradient-text { background:linear-gradient(100deg,#d77af4,#aa76f8)!important;-webkit-background-clip:text!important;background-clip:text!important; }
+        .mumu-hero p { font-size:17px!important;line-height:1.65!important;color:#eef0ff!important;max-width:420px; }
+        .mumu-hero .inline-flex.items-center { display:none!important; }
+        .mumu-hero .flex.items-center.space-x-3 { margin-top:18px; }
+        .mumu-feature-row { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px; }
+        .mumu-feature-card { display:flex;align-items:center;gap:18px;min-height:94px;padding:16px 24px;border-radius:19px;background:linear-gradient(145deg,rgba(15,25,57,.96),rgba(8,15,35,.98));border:1px solid rgba(99,119,235,.17); }
+        .mumu-feature-icon { width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(139,92,246,.13); }
+        .mumu-feature-icon.pink { color:#df7af4;background:rgba(192,90,230,.13); }.mumu-feature-icon.cyan { color:#57c9ff;background:rgba(59,130,246,.14); }.mumu-feature-icon.purple { color:#d17cf4;background:rgba(192,90,230,.13); }
+        .mumu-feature-card strong,.mumu-feature-card span { display:block; }.mumu-feature-card strong { font-size:17px;font-weight:600;color:#f4f5ff; }.mumu-feature-card span { color:#c1c9e5;font-size:14px;margin-top:2px; }
+        .mumu-categories-section { display:flex;flex-direction:column;gap:12px; }
+        .mumu-section-heading { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+        .mumu-section-heading h2 { font-size:22px;font-weight:800;color:#f8f9ff;display:flex;align-items:center;gap:12px; }.mumu-section-heading h2 i { color:#a78bfa;font-size:26px; }
+        .mumu-section-heading button { color:#c4b5fd;font-size:14px;white-space:nowrap; }.mumu-section-heading button i { margin-left:6px; }
+        .mumu-category-grid { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px; }
+        .mumu-category-card { min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:18px;border:1px solid rgba(99,119,235,.17);background:linear-gradient(145deg,rgba(15,25,57,.96),rgba(8,15,35,.98));color:#f6f7ff;padding:12px 8px;transition:transform .18s,border-color .18s; }
+        .mumu-category-card:hover { transform:translateY(-2px);border-color:rgba(167,139,250,.42); }
+        .category-icon { width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:27px;margin-bottom:2px;background:rgba(99,102,241,.12); }.category-icon.violet { color:#8e8bff; }.category-icon.cyan { color:#3ed9f5;background:rgba(34,211,238,.09); }.category-icon.turquoise { color:#28d9e5;background:rgba(45,212,191,.09); }.category-icon.gold { color:#ffc54d;background:rgba(251,191,36,.1); }.category-icon.blue { color:#79a8ff; }
+        .mumu-category-card strong { font-size:15px;font-weight:600; }.mumu-category-card small { color:#bac5e5;font-size:12px; }
+        #catalogSection > div:first-child { align-items:flex-end; }
+        #catalogSection h2 { font-size:22px!important; }
+        #customerProductGrid > * { border-radius:18px!important; }
+        @media(max-width:1100px) { .mumu-sidebar-desktop { width:260px;left:12px; } #customerView { margin-left:290px!important;margin-right:16px!important; } footer { margin-left:290px; } .mumu-brand-cat { width:42px;height:42px;flex-basis:42px; } .mumu-brand .text-2xl { font-size:20px; } .mumu-header-actions { gap:7px; } .mumu-wallet-pill { min-width:unset;padding:0 12px; } }
+        @media(max-width:760px) { .mumu-sidebar-desktop { display:none; } .mumu-topbar-inner { padding-left:10px!important;padding-right:10px!important; } .mumu-topbar-inner > div { gap:8px!important;height:64px!important; } .mumu-brand-cat { width:38px;height:38px;flex-basis:38px;font-size:21px; } .mumu-brand { gap:7px!important; }.mumu-brand .text-2xl { font-size:17px; }.mumu-brand .text-\[11px\] { font-size:9px; }.mumu-header-search { display:none; }.mumu-wallet-pill { height:40px;min-width:0;padding:0 10px;font-size:12px;gap:6px; }.mumu-round-action { height:40px;width:40px;font-size:16px; }.mumu-header-actions { gap:6px!important; }.mumu-admin-shortcut { display:none!important; } #customerView { margin:0!important;width:100%!important;padding:12px!important;gap:16px!important; } footer { margin-left:0; } .mumu-hero,.mumu-hero > div:first-child { height:260px!important;min-height:260px!important; } .mumu-hero > div:first-child { padding:18px!important; }.mumu-hero .relative.z-10 { max-width:62%!important; }.mumu-hero h1 { font-size:clamp(1.35rem,5vw,2rem)!important; }.mumu-hero p { font-size:12px!important;line-height:1.45!important; }.mumu-hero .flex.items-center.space-x-3 { flex-wrap:wrap;gap:8px;margin-top:8px; }.mumu-hero .flex.items-center.space-x-3 button { padding:9px 12px!important;font-size:11px!important; }.mumu-feature-row { gap:8px; }.mumu-feature-card { min-height:100px;padding:10px 7px;gap:7px;flex-direction:column;text-align:center; }.mumu-feature-icon { width:40px;height:40px;font-size:18px; }.mumu-feature-card strong { font-size:12px; }.mumu-feature-card span { font-size:10px; }.mumu-category-grid { grid-template-columns:repeat(3,minmax(0,1fr));gap:8px; }.mumu-category-card { min-height:110px; }.mumu-category-card strong { font-size:12px; }.mumu-category-card small { font-size:10px; }.category-icon { width:42px;height:42px;font-size:20px; } #catalogSection > div:first-child { align-items:flex-start; } }
+        @media(max-width:420px) { .mumu-brand .text-2xl { font-size:15px; }.mumu-brand .text-\[11px\] { display:none; }.mumu-wallet-pill { font-size:0; }.mumu-wallet-pill i { font-size:17px; }.mumu-hero .relative.z-10 { max-width:68%!important; }.mumu-hero h1 { font-size:1.25rem!important; }.mumu-feature-card { padding:8px 3px; } }
+
+
+        .mumu-brand-cat { font-size:0!important;background-image:url('/mumu-cat-hero.jpg');background-size:230% auto;background-position:31% 35%;background-repeat:no-repeat; }
+        .mumu-hero-tagline { position:absolute;z-index:4;right:26px;top:48%;transform:translateY(-30%);display:flex;flex-direction:column;align-items:center;gap:1px;color:#df83f7;font-size:clamp(1rem,1.6vw,1.55rem);font-weight:700;line-height:1.25;text-shadow:0 2px 16px rgba(167,80,245,.42);transform:rotate(-7deg);pointer-events:none; }
+        .mumu-hero-tagline i { margin-top:7px;font-size:1.3em; }
+        @media(max-width:760px){ .mumu-hero-tagline { right:10px;top:46%;font-size:clamp(.65rem,2.7vw,.9rem); } }
+        @media(max-width:420px){ .mumu-hero-tagline { right:6px;font-size:.62rem; }.mumu-hero-tagline i { font-size:.9rem; } }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-mumu-pink selection:text-white mumu-sidebar-collapsed">
+
+    <!-- Reference-matched Mumu top bar -->
+    <header class="sticky top-0 z-40 mumu-glass border-b border-indigo-300/10 mumu-topbar">
+      <div class="mumu-topbar-inner px-4 sm:px-6">
+        <div class="flex items-center gap-4 h-[76px] min-w-0">
+          <button type="button" onclick="toggleMumuMenu()" aria-label="เปิด/ปิดเมนู" aria-controls="mumuSidebarDesktop mumuDrawer" aria-expanded="false" id="mumuMenuButton" class="w-12 h-12 shrink-0 rounded-2xl bg-indigo-950/70 border border-indigo-300/15 text-slate-200 flex items-center justify-center"><i class="fa-solid fa-bars text-xl"></i></button>
+          <div class="flex items-center gap-3 shrink-0 cursor-pointer mumu-brand" onclick="switchView('customer')">
+            <div class="mumu-brand-cat">🐈‍⬛</div>
+            <div class="leading-tight"><div class="text-2xl font-extrabold text-white">Mumu</div><div class="text-[11px] text-indigo-200/80">Topup-Premium Store</div></div>
+          </div>
+          <div class="mumu-header-search relative flex-1 min-w-0">
+            <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-indigo-200"></i>
+            <input id="headerSearchInput" type="search" placeholder="ค้นหาสินค้า..." aria-label="ค้นหาสินค้า" oninput="const q=document.getElementById('searchInput'); if(q){q.value=this.value;handleSearch();}" class="w-full h-[52px] rounded-full pl-12 pr-5 text-sm" />
+          </div>
+          <div class="flex items-center gap-3 shrink-0 mumu-header-actions">
+            <button onclick="openWalletModal()" class="mumu-wallet-pill" title="กระเป๋าเงิน"><i class="fa-solid fa-wallet"></i><span id="currentUserBalance">฿0.00</span></button>
+            <button onclick="openCartModal()" title="ตะกร้าสินค้า" class="mumu-round-action relative"><i class="fa-solid fa-cart-shopping"></i><span id="cartBadge" class="hidden absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-pink-500 text-white text-[10px] font-black items-center justify-center">0</span></button>
+            <button id="authButton" onclick="openAuthModal('login')" title="บัญชีของฉัน" class="mumu-round-action"><i class="fa-solid fa-user"></i><span class="sr-only">เข้าสู่ระบบ</span></button>
+            <div id="loggedInBox" class="hidden items-center gap-2">
+              <span class="hidden" id="currentUserName">-</span>
+              <button onclick="openTransactionModal()" title="ประวัติธุรกรรม" class="mumu-round-action"><i class="fa-solid fa-receipt"></i></button>
+              <button onclick="logoutCustomer()" title="ออกจากระบบ" class="mumu-round-action"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            <button id="btnAdminView" onclick="switchView('admin')" title="ระบบหลังบ้าน" class="mumu-admin-shortcut"><i class="fa-solid fa-shield-halved"></i><span>หลังบ้าน</span><span id="adminAuthBadge" class="hidden">LOGGED IN</span><span id="pendingBadge" class="hidden">0</span></button>
+            <button id="btnCustomerView" onclick="switchView('customer')" class="hidden">หน้าร้านค้า</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Fixed desktop sidebar matching the reference layout -->
+    <aside id="mumuSidebarDesktop" class="mumu-sidebar-desktop" aria-label="เมนูหลัก">
+      <div class="mumu-sidebar-profile">
+        <div class="mumu-brand-cat">🐈‍⬛</div><div class="min-w-0"><strong id="desktopSidebarName">Mumu</strong><span id="desktopSidebarSub">สมาชิกระดับทั่วไป</span></div>
+        <button onclick="toggleMumuMenu(true)" aria-label="เปิดเมนูมือถือ" class="mumu-sidebar-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <nav class="mumu-sidebar-nav">
+        <button class="mumu-side-link active" onclick="switchView('customer');window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-house"></i>หน้าหลัก</button>
+        <button class="mumu-side-link" onclick="openWalletModal()"><i class="fa-solid fa-shield-halved"></i>เติมเงิน</button>
+        <button class="mumu-side-link" onclick="scrollToCatalog()"><i class="fa-solid fa-box-open"></i>สินค้าทั้งหมด</button>
+        <button class="mumu-side-link" onclick="openCartModal()"><i class="fa-solid fa-basket-shopping"></i>ตะกร้าสินค้า</button>
+        <div class="mumu-sidebar-divider"></div><div class="mumu-sidebar-heading">บัญชีของฉัน</div>
+        <button class="mumu-side-link" onclick="openAccountModal()"><i class="fa-regular fa-user"></i>ข้อมูลบัญชี</button>
+        <button class="mumu-side-link" onclick="openWalletModal()"><i class="fa-solid fa-wallet"></i>กระเป๋าเงิน</button>
+        <button class="mumu-side-link" onclick="openHistoryModal()"><i class="fa-regular fa-rectangle-list"></i>ประวัติการสั่งซื้อ</button>
+        <button class="mumu-side-link" onclick="openTransactionModal()"><i class="fa-regular fa-circle-plus"></i>ประวัติการทำรายการ</button>
+        <button class="mumu-side-link" onclick="openPasswordModal()"><i class="fa-solid fa-lock"></i>เปลี่ยนรหัสผ่าน</button>
+        <div class="mumu-sidebar-divider"></div>
+        <button class="mumu-side-link" onclick="logoutCustomer()"><i class="fa-solid fa-arrow-right-from-bracket"></i>ออกจากระบบ</button>
+      </nav>
+    </aside>
+
+    <!-- Mumu side drawer -->
+    <div id="mumuDrawerBackdrop" class="mumu-drawer-backdrop" onclick="toggleMumuMenu(false)" aria-hidden="true"></div>
+    <aside id="mumuDrawer" class="mumu-drawer p-4" aria-label="เมนูหลัก" aria-hidden="true">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-700/70">
+            <button type="button" onclick="switchView('customer');toggleMumuMenu(false)" class="flex items-center gap-3 text-left">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl">🐈‍⬛</div>
+                <span><strong class="block text-white tracking-wide">Mumu</strong><small class="text-slate-400">Topup-Premium Store</small></span>
+            </button>
+            <button type="button" onclick="toggleMumuMenu(false)" aria-label="ปิดเมนู" class="w-9 h-9 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="mumuDrawerUser" class="mb-4 p-3 rounded-2xl bg-slate-800/70 border border-slate-700/60">
+            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-200"><i class="fa-regular fa-user"></i></div><div class="min-w-0"><div id="mumuDrawerName" class="font-semibold text-sm text-white truncate">ยินดีต้อนรับ</div><div id="mumuDrawerSub" class="text-xs text-slate-400">เข้าสู่ระบบเพื่อจัดการบัญชี</div></div></div>
+            <div id="mumuDrawerWallet" class="hidden mt-3 pt-3 border-t border-slate-700/70 flex items-center justify-between gap-2"><span class="text-xs text-slate-400">ยอดเงินในกระเป๋า</span><strong id="mumuDrawerBalance" class="text-sm text-violet-300">฿0.00</strong></div>
+        </div>
+        <nav class="space-y-1" aria-label="ทางลัด">
+            <button class="mumu-menu-item" onclick="switchView('customer');toggleMumuMenu(false);window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-house"></i>หน้าหลัก</button>
+            <button class="mumu-menu-item" onclick="toggleMumuMenu(false);scrollToCatalog()"><i class="fa-solid fa-store"></i>เลือกซื้อสินค้า</button>
+            <button class="mumu-menu-item" onclick="toggleMumuMenu(false);openCartModal()"><i class="fa-solid fa-cart-shopping"></i>ตะกร้าสินค้า <span id="mumuDrawerCartBadge" class="hidden ml-auto rounded-full bg-violet-500/20 text-violet-200 px-2 py-0.5 text-[10px]">0</span></button>
+            <button class="mumu-menu-item" onclick="toggleMumuMenu(false);openWalletModal()"><i class="fa-solid fa-wallet"></i>กระเป๋าเงิน / เติมเงิน</button>
+            <button class="mumu-menu-item" onclick="toggleMumuMenu(false);openHistoryModal()"><i class="fa-solid fa-box-open"></i>ประวัติการสั่งซื้อ</button>
+            <button class="mumu-menu-item" onclick="toggleMumuMenu(false);openTransactionModal()"><i class="fa-solid fa-receipt"></i>ประวัติการทำรายการ</button>
+        </nav>
+        <div class="my-4 border-t border-slate-700/70"></div>
+        <div id="mumuDrawerGuest" class="space-y-1"><button class="mumu-menu-item" onclick="toggleMumuMenu(false);openAuthModal('login')"><i class="fa-solid fa-right-to-bracket"></i>เข้าสู่ระบบ</button><button class="mumu-menu-item" onclick="toggleMumuMenu(false);openAuthModal('register')"><i class="fa-solid fa-user-plus"></i>สมัครสมาชิก</button></div>
+        <div id="mumuDrawerMember" class="hidden space-y-1"><button class="mumu-menu-item" onclick="toggleMumuMenu(false);openAccountModal()"><i class="fa-regular fa-id-card"></i>ข้อมูลบัญชี</button><button class="mumu-menu-item" onclick="toggleMumuMenu(false);openPasswordModal()"><i class="fa-solid fa-lock"></i>เปลี่ยนรหัสผ่าน</button><button class="mumu-menu-item" onclick="toggleMumuMenu(false);logoutCustomer()"><i class="fa-solid fa-arrow-right-from-bracket"></i>ออกจากระบบ</button></div>
+        <div class="mt-6 pt-3 border-t border-slate-800 text-[11px] text-slate-500">เรียบง่าย ใช้งานสะดวก ในแบบ Mumu</div>
+    </aside>
+
+    <!-- ========================================================= -->
+    <!-- CUSTOMER FRONT-END VIEW -->
+    <!-- ========================================================= -->
+    <main id="customerView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex-grow w-full">
+
+        <!-- Hero Promo Banner -->
+        <section class="mumu-hero relative rounded-3xl overflow-hidden border border-mumu-pink/30 bg-mumu-card shadow-2xl">
+            <div class="relative min-h-[220px] sm:min-h-[280px] flex items-center p-6 sm:p-10 overflow-hidden">
+                <div class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-40 scale-105" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1200&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-mumu-dark via-mumu-dark/90 to-transparent"></div>
+                <img class="mumu-hero-cat" src="/mumu-cat-hero.jpg" alt="มาสคอตแมว Mumu ใส่ฮู้ดสีดำ" />
+                <div class="relative z-10 max-w-xl space-y-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-mumu-pink/20 text-mumu-pink border border-mumu-pink/30">
+                        <i class="fa-solid fa-paw mr-1.5"></i> MUMU TOPUP · PREMIUM STORE
+                    </span>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                        Mumu Topup<br>
+                        <span class="gradient-text">Premium Store</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-300">
+                        เติมเกม ซื้อสินค้า เกมออนไลน์ และบริการดิจิทัลครบจบในที่เดียว
+                    </p>
+                    <div class="flex items-center space-x-3 pt-2">
+                        <button onclick="scrollToCatalog()" class="bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-mumu-pink/30 transition text-xs sm:text-sm">
+                            เริ่มช้อปเลย <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                        <button onclick="openHistoryModal()" class="bg-mumu-card hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold px-4 py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-mumu-cyan"></i> เช็คประวัติการสั่งซื้อ
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mumu-hero-tagline" aria-label="เติมง่าย ปลอดภัย รวดเร็ว"><span>เติมง่าย</span><span>ปลอดภัย</span><span>รวดเร็ว</span><i class="fa-solid fa-paw"></i></div>
+        </section>
+
+        <!-- Reference feature cards -->
+        <section class="mumu-feature-row" aria-label="จุดเด่นบริการ">
+          <article class="mumu-feature-card"><div class="mumu-feature-icon pink"><i class="fa-solid fa-bolt"></i></div><div><strong>เติมเงินไว</strong><span>ปลอดภัย 100%</span></div></article>
+          <article class="mumu-feature-card"><div class="mumu-feature-icon cyan"><i class="fa-solid fa-shield-halved"></i></div><div><strong>สินค้าแท้</strong><span>ราคาที่ดีที่สุด</span></div></article>
+          <article class="mumu-feature-card"><div class="mumu-feature-icon purple"><i class="fa-solid fa-headset"></i></div><div><strong>บริการดูแล</strong><span>ตลอด 24 ชม.</span></div></article>
+        </section>
+
+        <section class="mumu-categories-section" aria-label="หมวดหมู่สินค้า">
+          <div class="mumu-section-heading"><h2><i class="fa-solid fa-gamepad"></i> หมวดหมู่สินค้า</h2><button onclick="scrollToCatalog()">ดูทั้งหมด <i class="fa-solid fa-arrow-right"></i></button></div>
+          <div class="mumu-category-grid">
+            <button onclick="filterCategory('game')" class="mumu-category-card"><span class="category-icon violet"><i class="fa-solid fa-gamepad"></i></span><strong>เกมออนไลน์</strong><small>เติมเกมทุกค่าย</small></button>
+            <button onclick="filterCategory('app')" class="mumu-category-card"><span class="category-icon cyan"><i class="fa-solid fa-mobile-screen-button"></i></span><strong>มือถือ &amp; เน็ต</strong><small>แพ็กเกจรายเดือน</small></button>
+            <button onclick="filterCategory('game')" class="mumu-category-card"><span class="category-icon turquoise"><i class="fa-solid fa-gem"></i></span><strong>ไอเทมพิเศษ</strong><small>ไอเทม/ของในเกม</small></button>
+            <button onclick="filterCategory('app')" class="mumu-category-card"><span class="category-icon gold"><i class="fa-solid fa-star"></i></span><strong>บัตรเติมเงิน</strong><small>บัตรเติมเงินดิจิทัล</small></button>
+            <button onclick="filterCategory('all')" class="mumu-category-card"><span class="category-icon blue"><i class="fa-solid fa-grip"></i></span><strong>อื่นๆ</strong><small>บริการอื่นๆ</small></button>
+          </div>
+        </section>
+
+        <!-- Search & Category Filters -->
+        <section id="catalogSection" class="space-y-6">
+
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-mumu-pink"></i> สินค้ายอดนิยม
+                    </h2>
+                    <p class="text-xs text-slate-400">ค้นหาและเลือกบริการเติมเกมหรือแอปพรีเมียมที่คุณต้องการ</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <!-- Search Bar -->
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="searchInput" oninput="handleSearch()" placeholder="ค้นหาชื่อเกม หรือ แอป..." class="w-full bg-mumu-card border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                    </div>
+
+                    <!-- Category Buttons -->
+                    <div class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+                        <button onclick="filterCategory('all')" id="cat-all" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gradient-to-r from-mumu-purple to-mumu-pink text-white">
+                            ทั้งหมด
+                        </button>
+                        <button onclick="filterCategory('app')" id="cat-app" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-mumu-card text-slate-300 hover:bg-slate-800 border border-slate-800">
+                            <i class="fa-solid fa-play-circle mr-1 text-mumu-pink"></i> แอปพรีเมียม
+                        </button>
+                        <button onclick="filterCategory('game')" id="cat-game" class="cat-btn px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-mumu-card text-slate-300 hover:bg-slate-800 border border-slate-800">
+                            <i class="fa-solid fa-gamepad mr-1 text-mumu-cyan"></i> เติมเกมออนไลน์
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="customerProductGrid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================================= -->
+    <!-- ADMIN DASHBOARD VIEW (PROTECTED) -->
+    <!-- ========================================================= -->
+    <main id="adminView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex-grow w-full">
+        
+        <!-- Admin Info Header Banner -->
+        <div class="mumu-glass p-6 rounded-3xl border border-mumu-pink/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-mumu-pink/20 text-mumu-pink border border-mumu-pink/30">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Admin Authentication Verified
+                    </span>
+                    <span class="text-xs text-slate-400" id="adminSessionInfo">ยินดีต้อนรับ ผู้ดูแลระบบ</span>
+                </div>
+                <h1 class="text-2xl font-black text-white mt-2">ระบบหลังบ้าน Mumu Topup-Premium Store</h1>
+                <p class="text-xs text-slate-400 mt-0.5">จัดการคำสั่งซื้อ อนุมัติรหัสแอป/เกม และแก้ไขราคาสินค้า</p>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button onclick="adminLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ Admin
+                </button>
+                
+            </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="mumu-card p-5 rounded-2xl">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold">ยอดขายสำเร็จรวม</span>
+                    <i class="fa-solid fa-coins text-emerald-400"></i>
+                </div>
+                <div class="text-2xl font-black text-emerald-400" id="adminTotalRevenue">฿0.00</div>
+                <div class="text-[11px] text-slate-500 mt-1">คำสั่งซื้อที่อนุมัติแล้ว</div>
+            </div>
+
+            <div class="mumu-card p-5 rounded-2xl">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold">ออเดอร์รอดำเนินการ</span>
+                    <i class="fa-solid fa-hourglass-half text-amber-400"></i>
+                </div>
+                <div class="text-2xl font-black text-amber-400" id="adminPendingOrders">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">ต้องรอส่งรหัส/อนุมัติ</div>
+            </div>
+
+            <div class="mumu-card p-5 rounded-2xl">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold">รายการสินค้าทั้งหมด</span>
+                    <i class="fa-solid fa-box text-mumu-cyan"></i>
+                </div>
+                <div class="text-2xl font-black text-white" id="adminTotalProducts">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">เกม & แอปพรีเมียม</div>
+            </div>
+
+            <div class="mumu-card p-5 rounded-2xl">
+                <div class="flex items-center justify-between text-slate-400 mb-2">
+                    <span class="text-xs font-bold">สมาชิกในระบบ</span>
+                    <i class="fa-solid fa-users text-mumu-pink"></i>
+                </div>
+                <div class="text-2xl font-black text-white" id="adminTotalUsers">0</div>
+                <div class="text-[11px] text-slate-500 mt-1">ผู้ใช้งานในฐานข้อมูล</div>
+            </div>
+        </div>
+
+        <!-- Admin Navigation Tabs -->
+        <div class="flex border-b border-slate-800 space-x-4">
+            <button onclick="switchAdminTab('orders')" id="tabBtn-orders" class="admin-tab-btn pb-3 text-sm font-bold text-mumu-pink border-b-2 border-mumu-pink transition flex items-center gap-2">
+                <i class="fa-solid fa-list-check"></i> จัดการคำสั่งซื้อ (Orders)
+            </button>
+            <button onclick="switchAdminTab('products')" id="tabBtn-products" class="admin-tab-btn pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-boxes-stacked"></i> จัดการสินค้า (Products)
+            </button>
+            <button onclick="switchAdminTab('users')" id="tabBtn-users" class="admin-tab-btn pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-user-gear"></i> สมาชิก & Wallet
+            </button>
+            <button onclick="switchAdminTab('deposits')" id="tabBtn-deposits" class="admin-tab-btn pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-transfer"></i> เติมเงินรอตรวจ
+                <span id="depositPendingBadge" class="hidden bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">0</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: ORDER MANAGEMENT -->
+        <section id="adminTab-orders" class="space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div><h3 class="text-lg font-bold text-white">รายการสั่งซื้อ แยกตามบัญชีสมาชิก</h3><p class="text-xs text-slate-400 mt-1">เลือกสมาชิกเพื่อดูออเดอร์ของบัญชีนั้น และอนุมัติหลายรายการของสมาชิกคนเดียวกันได้</p></div>
+                <div class="flex items-center flex-wrap gap-2">
+                    <button id="bulkApproveOrdersButton" onclick="openBulkApproveModal()" disabled class="bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-2 rounded-xl text-xs font-bold transition">อนุมัติที่เลือก (<span id="bulkSelectedOrderCount">0</span>)</button>
+                    <select id="orderStatusFilter" onchange="renderAdminOrders()" class="bg-mumu-card border border-slate-700 text-xs text-white rounded-xl px-3 py-2">
+                        <option value="all">สถานะทั้งหมด</option>
+                        <option value="pending">รอดำเนินการ (Pending)</option>
+                        <option value="completed">สำเร็จ (Completed)</option>
+                        <option value="cancelled">ยกเลิก (Cancelled)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mumu-card rounded-2xl p-4 space-y-3">
+                <label for="adminOrderMemberSearch" class="block text-xs font-bold text-slate-300">ค้นหาสมาชิก</label>
+                <input id="adminOrderMemberSearch" type="search" oninput="renderAdminOrders()" placeholder="ค้นหาด้วยชื่อ / อีเมล / Member ID..." class="w-full bg-slate-950 border border-slate-700 focus:border-mumu-pink rounded-xl px-4 py-3 text-sm text-white outline-none">
+                <p class="text-[11px] text-slate-500">ระบบจะแสดงคำสั่งซื้อภายใต้บัญชีเจ้าของรายการ ไม่รวมออเดอร์ของสมาชิกอื่นไว้ด้วยกัน</p>
+            </div>
+            <div class="mumu-card rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">เลือก</th>
+                                <th class="p-4">รหัสออเดอร์</th>
+                                <th class="p-4">สินค้า & แพ็กเกจ</th>
+                                <th class="p-4">ข้อมูล ID/Email</th>
+                                <th class="p-4">ยอดเงิน</th>
+                                <th class="p-4">การชำระ</th>
+                                <th class="p-4">สถานะ</th>
+                                <th class="p-4 text-center">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminOrderTableBody" class="divide-y divide-slate-800/60">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PRODUCT MANAGEMENT -->
+        <section id="adminTab-products" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">รายการสินค้าทั้งหมด</h3>
+                <button onclick="openAddProductModal()" class="bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-plus"></i> เพิ่มสินค้าใหม่
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="adminProductGrid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- TAB 3: USER WALLET MANAGEMENT -->
+        <section id="adminTab-users" class="hidden space-y-4">
+            <h3 class="text-lg font-bold text-white">ปรับยอดเครดิต Wallet ของสมาชิก</h3>
+            <div class="mumu-card rounded-2xl p-6 max-w-xl">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-mumu-pink/20 text-mumu-pink flex items-center justify-center text-xl border border-mumu-pink/30">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-white" id="adminUserDetailName">ยังไม่ได้เลือกสมาชิก</div>
+                        <div class="text-xs text-slate-400" id="adminUserDetailEmail">เลือกสมาชิกจากรายการด้านล่าง</div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="adminUserSearch" class="block text-xs text-slate-300 font-bold mb-2">ค้นหาสมาชิกด้วยชื่อหรืออีเมล</label>
+                    <input id="adminUserSearch" type="search" autocomplete="off" oninput="filterAdminUsers(this.value)" placeholder="พิมพ์ชื่อสมาชิกหรืออีเมล..." class="w-full mb-3 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-mumu-pink">
+                    <label class="block text-xs text-slate-300 font-bold mb-2">เลือกสมาชิกที่ต้องการปรับ Wallet</label>
+                    <select id="adminUserSelect" onchange="selectAdminUser(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                        <option value="">-- เลือกสมาชิก --</option>
+                    </select>
+                    <p id="adminUserSearchCount" class="text-[11px] text-slate-500 mt-2">ค้นหาได้จากชื่อหรืออีเมล</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4 flex justify-between items-center">
+                    <span class="text-xs text-slate-400">ยอดเงินปัจจุบัน</span>
+                    <span class="text-xl font-black text-emerald-400" id="adminUserDetailBalance">฿0.00</span>
+                </div>
+                <div class="space-y-3">
+                    <label class="block text-xs text-slate-300 font-bold">ระบุจำนวนเงินที่ต้องการปรับปรุง</label>
+                    <input type="number" id="adminAdjustWalletInput" placeholder="ระบุจำนวนเงิน (บาท)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                    <div class="flex space-x-2">
+                        <button onclick="adminAdjustWallet(true)" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition">
+                            <i class="fa-solid fa-plus mr-1"></i> เพิ่มเงิน
+                        </button>
+                        <button onclick="adminAdjustWallet(false)" class="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                            <i class="fa-solid fa-minus mr-1"></i> หักเงิน
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: DEPOSIT APPROVAL -->
+        <section id="adminTab-deposits" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-white">ตรวจสอบรายการเติมเงิน</h3>
+                    <p class="text-xs text-slate-400 mt-1">ตรวจสลิปและยอดโอนก่อนกดอนุมัติ เงินจึงจะเข้า Wallet ลูกค้า</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2"><button id="bulkApproveDepositsButton" onclick="bulkApproveDeposits()" disabled class="px-3 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed">อนุมัติที่เลือก (<span id="bulkSelectedDepositCount">0</span>)</button><button onclick="refreshFromServer()" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 hover:text-white"><i class="fa-solid fa-rotate mr-1"></i> รีเฟรช</button></div>
+            </div>
+            <div class="mumu-card rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 text-[10px] font-bold border-b border-slate-800">
+                            <tr><th class="p-4"><input id="selectAllPendingDeposits" type="checkbox" aria-label="เลือกรายการเติมเงินที่รอตรวจทั้งหมด" onchange="toggleSelectAllPendingDeposits(this.checked)"></th><th class="p-4">รายการ</th><th class="p-4">สมาชิก</th><th class="p-4">จำนวน</th><th class="p-4">สลิป</th><th class="p-4">สถานะ</th><th class="p-4">จัดการ</th></tr>
+                        </thead>
+                        <tbody id="adminDepositTableBody" class="divide-y divide-slate-800/60"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+            <p>© 2026 Mumu Topup-Premium Store - All Rights Reserved</p>
+            <p class="text-[11px] text-slate-600">บริการเติมเกมและสินค้าดิจิทัล Mumu Topup-Premium Store</p>
+        </div>
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- ALL MODALS SECTION -->
+    <!-- ========================================================= -->
+
+    <!-- 1. ADMIN LOGIN AUTHENTICATION MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="relative w-full max-w-md bg-mumu-card border border-mumu-pink/40 rounded-3xl p-6 shadow-2xl space-y-5">
+            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-mumu-purple to-mumu-pink text-white flex items-center justify-center text-xl mx-auto shadow-lg shadow-mumu-pink/30">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">เข้าสู่ระบบหลังบ้าน (Admin)</h3>
+                <p class="text-xs text-slate-400">กรุณาเข้าสู่ระบบเพื่อจัดการร้านค้า Mumu Topup-Premium Store</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Username / ผู้ใช้งาน</label>
+                    <input type="text" id="adminUserAuth" required placeholder="admin" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Password / รหัสผ่าน</label>
+                    <input type="password" id="adminPassAuth" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-bold py-3 rounded-xl transition text-xs shadow-lg shadow-mumu-pink/30">
+                    เข้าสู่ระบบ Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. CUSTOMER CART MODAL -->
+    <div id="cartModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-2xl bg-mumu-card border border-mumu-pink/30 rounded-3xl shadow-2xl overflow-hidden">
+            <button onclick="closeCartModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="p-6 bg-slate-900/60 border-b border-slate-800">
+                <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-2xl bg-mumu-pink/15 text-mumu-pink flex items-center justify-center"><i class="fa-solid fa-cart-shopping"></i></div><div><h3 class="text-xl font-bold text-white">ตะกร้าสินค้า</h3><p class="text-xs text-slate-400">เลือกหลายรายการแล้วชำระพร้อมกันได้</p></div></div>
+            </div>
+            <div id="cartItems" class="p-6 space-y-3 max-h-[55vh] overflow-y-auto"></div>
+            <div class="p-6 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-4">
+                <div><div class="text-[10px] text-slate-400">ยอดรวมตะกร้า</div><div id="cartTotal" class="text-2xl font-black text-emerald-400">฿0.00</div></div>
+                <button id="cartCheckoutButton" onclick="checkoutCart()" class="bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-extrabold px-6 py-3 rounded-xl transition flex items-center gap-2"><i class="fa-solid fa-credit-card"></i> ชำระทั้งหมด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CUSTOMER CHECKOUT MODAL -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-2xl bg-mumu-card border border-mumu-pink/30 rounded-3xl shadow-2xl overflow-hidden">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="p-6 bg-slate-900/60 border-b border-slate-800 flex items-center gap-4">
+                <img id="modalProductImg" src="" alt="" class="w-20 h-20 rounded-2xl object-cover border-2 border-mumu-pink/40">
+                <div>
+                    <span id="modalProductCategory" class="px-2 py-0.5 rounded text-[10px] font-bold bg-mumu-pink/20 text-mumu-pink">CAT</span>
+                    <h3 id="modalProductTitle" class="text-xl font-bold text-white mt-1">Product Title</h3>
+                    <p id="modalProductDesc" class="text-xs text-slate-400">เลือกแพ็กเกจที่คุณต้องการสั่งซื้อ</p>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-1">1. ข้อมูล ID / Email ที่ต้องการเติม <span class="text-mumu-pink">*</span></label>
+                    <input type="text" id="userAccountInput" placeholder="กรอก UID, Tagline หรือ Email" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-mumu-pink">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-2">2. เลือกแพ็กเกจ <span class="text-mumu-pink">*</span></label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="packageList"></div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-2">3. เลือกช่องทางชำระเงิน</label>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div id="pay-wallet" class="pay-card border-2 border-mumu-pink bg-mumu-pink/10 rounded-2xl p-3 text-center">
+                            <i class="fa-solid fa-wallet text-amber-400 mb-1 text-lg"></i>
+                            <div class="text-xs font-bold text-white">เครดิต Wallet</div>
+                            <div class="text-[10px] text-slate-400 mt-1">ระบบจะหักเงินจากยอด Wallet ของคุณทันทีเมื่อยืนยัน</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+                <div>
+                    <div class="text-[10px] text-slate-400">ยอดชำระสุทธิ</div>
+                    <div class="text-2xl font-black text-emerald-400" id="modalTotalPrice">฿0.00</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="addCurrentProductToCart()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-4 py-3 rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-cart-plus text-mumu-pink"></i> เพิ่มลงตะกร้า
+                    </button>
+                    <button onclick="processCustomerCheckout()" class="bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-extrabold px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-lg shadow-mumu-pink/30">
+                        <i class="fa-solid fa-bolt"></i> ซื้อทันที
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk approve orders modal: each order gets its own delivery text -->
+    <div id="adminBulkDeliverModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+        <div class="relative w-full max-w-3xl max-h-[90vh] overflow-hidden bg-mumu-card border border-emerald-500/30 rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col">
+            <button onclick="closeBulkApproveModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white" aria-label="ปิด"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="text-lg font-bold text-white mb-1 pr-8">อนุมัติคำสั่งซื้อหลายรายการ</h3>
+            <p class="text-xs text-slate-400 mb-4">ตรวจสอบแต่ละออเดอร์และกรอกรหัส/ข้อความส่งมอบแยกกัน จากนั้นกดอนุมัติครั้งเดียว</p>
+            <div id="bulkDeliverOrderFields" class="space-y-3 overflow-y-auto pr-1"></div>
+            <div class="flex flex-col sm:flex-row gap-2 mt-4 pt-4 border-t border-slate-700">
+                <button onclick="closeBulkApproveModal()" class="sm:w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl text-xs">ยกเลิก</button>
+                <button id="confirmBulkApproveButton" onclick="confirmBulkApproveOrders()" class="sm:flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl text-xs">อนุมัติรายการที่เลือกทั้งหมด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ADMIN DELIVER / FULFILL ORDER MODAL -->
+    <div id="adminDeliverModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-md bg-mumu-card border border-mumu-pink/30 rounded-3xl p-6 shadow-2xl">
+            <button onclick="closeAdminDeliverModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1">อนุมัติและส่งมอบรหัสสินค้า</h3>
+            <p class="text-xs text-slate-400 mb-4" id="deliverOrderInfo">Order #1001</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">ระบุข้อความ/รหัสส่งให้ลูกค้า</label>
+                    <textarea id="deliverAccountText" rows="3" placeholder="เช่น Email: pass@mumu.com | Pass: 12345 | PIN: 9988" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-mumu-pink"></textarea>
+                </div>
+                <button onclick="confirmApproveOrder()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl transition text-xs">
+                    อนุมัติและส่งมอบทันที
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ADD NEW PRODUCT MODAL (ADMIN) -->
+    <div id="addProductModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-md bg-mumu-card border border-mumu-pink/30 rounded-3xl p-6 shadow-2xl">
+            <button onclick="closeAddProductModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-4">เพิ่มสินค้าบริการใหม่</h3>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">ชื่อสินค้า</label>
+                    <input type="text" id="newProdTitle" placeholder="เช่น Spotify Premium" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">หมวดหมู่</label>
+                    <select id="newProdCategory" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                        <option value="app">แอปพรีเมียม (App)</option>
+                        <option value="game">เติมเกม (Game)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">รูปภาพ URL</label>
+                    <input type="text" id="newProdImage" placeholder="URL รูปภาพ..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-bold text-slate-300">แพ็กเกจและราคา (บาท)</label>
+                        <button type="button" onclick="addPackageRow('newProductPackages')" class="rounded-lg bg-cyan-500/15 px-3 py-1.5 text-cyan-300 font-bold">+ เพิ่มแพ็กเกจ</button>
+                    </div>
+                    <div id="newProductPackages" class="space-y-2"></div>
+                </div>
+
+                <button onclick="saveNewProduct()" class="w-full bg-gradient-to-r from-mumu-purple to-mumu-pink hover:opacity-90 text-white font-bold py-2.5 rounded-xl transition mt-2">
+                    บันทึกสร้างสินค้า
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4B. EDIT PRODUCT MODAL (ADMIN) -->
+    <div id="editProductModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-md bg-mumu-card border border-mumu-cyan/30 rounded-3xl p-6 shadow-2xl">
+            <button onclick="closeEditProductModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-4">แก้ไขสินค้า</h3>
+            <div class="space-y-3 text-xs">
+                <div><label class="block text-slate-300 font-bold mb-1">ชื่อสินค้า</label><input type="text" id="editProdTitle" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></div>
+                <div><label class="block text-slate-300 font-bold mb-1">หมวดหมู่</label><select id="editProdCategory" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"><option value="app">แอปพรีเมียม (App)</option><option value="game">เติมเกม (Game)</option></select></div>
+                <div><label class="block text-slate-300 font-bold mb-1">รูปภาพ URL</label><input type="text" id="editProdImage" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-slate-300 font-bold">แพ็กเกจและราคา (บาท)</label>
+                        <button type="button" onclick="addPackageRow('editProductPackages')" class="rounded-lg bg-cyan-500/15 px-3 py-1.5 text-cyan-300 font-bold">+ เพิ่มแพ็กเกจ</button>
+                    </div>
+                    <div id="editProductPackages" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+                </div>
+                <button onclick="saveEditedProduct()" class="w-full bg-gradient-to-r from-cyan-500 to-mumu-purple hover:opacity-90 text-white font-bold py-2.5 rounded-xl transition mt-2">บันทึกการแก้ไข</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. CUSTOMER HISTORY MODAL -->
+    <div id="historyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-2xl bg-mumu-card border border-mumu-pink/30 rounded-3xl p-6 shadow-2xl space-y-4">
+            <button onclick="closeHistoryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-mumu-pink"></i> ประวัติสั่งซื้อของคุณ
+            </h3>
+
+            <div class="max-h-[60vh] overflow-y-auto space-y-3" id="customerHistoryList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. WALLET TRANSACTION MODAL -->
+    <div id="transactionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-2xl bg-mumu-card border border-mumu-pink/30 rounded-3xl p-6 shadow-2xl space-y-4">
+            <button onclick="closeTransactionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="flex items-center justify-between pr-8">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-mumu-cyan"></i> ประวัติธุรกรรม Wallet
+                </h3>
+                <span class="text-xs text-slate-400" id="transactionBalance">ยอดคงเหลือ ฿0.00</span>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto space-y-3" id="customerTransactionList">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. WALLET DEPOSIT MODAL -->
+    <div id="walletModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div class="relative w-full max-w-md bg-mumu-card border border-mumu-pink/30 rounded-3xl p-6 shadow-2xl space-y-4">
+            <button onclick="closeWalletModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-wallet text-amber-400"></i> เติมเงินเครดิต Wallet
+            </h3>
+
+            <div class="space-y-3">
+                <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-slate-300">
+                    <b class="text-amber-300">วิธีเติมเงิน:</b> ใส่จำนวนเงิน → สร้าง QR PromptPay → โอนตามยอด → อัปโหลดสลิป → ส่งให้แอดมินตรวจสอบ
+                </div>
+                <label class="block text-xs text-slate-300">จำนวนเงินที่ต้องการเติม (บาท)</label>
+                <input type="number" min="1" max="100000" id="depositInput" placeholder="100" oninput="previewDepositQR()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                <div id="depositQrBox" class="hidden text-center p-3 bg-white rounded-2xl">
+                    <img id="depositQrImage" class="mx-auto w-56 h-56" alt="PromptPay QR">
+                    <div class="text-xs text-slate-700 mt-2">สแกน QR เพื่อโอนเงินตามยอดที่ระบุ</div>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <input type="file" id="depositSlip" accept="image/png,image/jpeg,image/webp" class="w-full text-xs text-slate-300 bg-slate-950 border border-slate-700 rounded-xl p-2">
+                    <input type="text" id="depositNote" maxlength="300" placeholder="หมายเหตุ/เลขอ้างอิง (ถ้ามี)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white">
+                </div>
+                <button onclick="confirmDeposit()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl transition text-xs">
+                    <i class="fa-solid fa-paper-plane mr-1"></i> ส่งรายการให้แอดมินตรวจสอบ
+                </button>
+                <div id="depositStatus" class="text-[11px] text-slate-400"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="mumu-glass w-full max-w-md rounded-3xl p-6 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-mumu-purple via-mumu-pink to-mumu-cyan flex items-center justify-center shadow-lg mb-3"><i class="fa-solid fa-user text-white text-xl"></i></div>
+                <h3 id="authTitle" class="text-2xl font-black text-white">เข้าสู่ระบบ</h3>
+                <p id="authSubtitle" class="text-xs text-slate-400 mt-1">เข้าสู่บัญชี MUMU TOPUP-PRIEMIUM ของคุณ</p>
+            </div>
+            <form id="authForm" onsubmit="submitAuth(event)" class="space-y-3">
+                <div id="authNameWrap" class="hidden">
+                    <label class="block text-xs text-slate-300 mb-1">ชื่อที่ใช้แสดง</label>
+                    <input id="authName" type="text" minlength="2" maxlength="80" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-mumu-pink" placeholder="ชื่อของคุณ">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">อีเมล</label>
+                    <input id="authEmail" type="email" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-mumu-pink" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">รหัสผ่าน</label>
+                    <input id="authPassword" type="password" required minlength="6" maxlength="100" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-mumu-pink" placeholder="อย่างน้อย 6 ตัวอักษร">
+                </div>
+                <button id="authSubmit" type="submit" class="w-full bg-gradient-to-r from-mumu-purple to-mumu-pink text-white font-bold py-3 rounded-xl">เข้าสู่ระบบ</button>
+            </form>
+            <button id="authSwitch" onclick="toggleAuthMode()" class="w-full mt-4 text-xs text-mumu-cyan hover:text-white">ยังไม่มีบัญชี? สมัครสมาชิก</button>
+        </div>
+    </div>
+
+    <!-- MUMU ACCOUNT MODALS: separated, centered, dark cat-themed panels -->
+    <div id="accountModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle" onclick="if(event.target===this)closeAccountModal()">
+      <section class="relative w-full max-w-md max-h-[88vh] overflow-y-auto rounded-3xl border border-violet-400/30 bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 p-6 shadow-2xl shadow-violet-950/40">
+        <button type="button" onclick="closeAccountModal()" aria-label="ปิดข้อมูลบัญชี" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-slate-300 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <div class="mb-5 flex items-center gap-3 pr-10"><div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-400/30 bg-violet-500/15 text-2xl">🐈‍⬛</div><div><h3 id="accountModalTitle" class="text-lg font-bold text-white">ข้อมูลบัญชี</h3><p class="text-xs text-slate-400">ข้อมูลสมาชิก Mumu ของคุณ</p></div></div>
+        <div class="space-y-3">
+          <div class="rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4"><div class="mb-1 text-xs text-slate-400">ชื่อสมาชิก</div><div id="accountModalName" class="break-words text-sm font-semibold text-white">—</div></div>
+          <div class="rounded-2xl border border-slate-700/80 bg-slate-900/80 p-4"><div class="mb-1 text-xs text-slate-400">อีเมล</div><div id="accountModalEmail" class="break-words text-sm font-semibold text-cyan-200">—</div></div>
+          <div class="rounded-2xl border border-violet-400/20 bg-violet-500/10 p-4"><div class="mb-1 text-xs text-violet-200">ยอดเงินในกระเป๋า</div><div id="accountModalBalance" class="text-xl font-black text-white">฿0.00</div></div>
+        </div>
+        <button type="button" onclick="closeAccountModal()" class="mt-5 w-full rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3 text-sm font-bold text-white">ปิดหน้าต่าง</button>
+      </section>
+    </div>
+
+    <div id="passwordModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" onclick="if(event.target===this)closePasswordModal()">
+      <section class="relative w-full max-w-md max-h-[88vh] overflow-y-auto rounded-3xl border border-cyan-400/25 bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 p-6 shadow-2xl shadow-cyan-950/30">
+        <button type="button" onclick="closePasswordModal()" aria-label="ปิดเปลี่ยนรหัสผ่าน" class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-slate-300 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <div class="mb-5 flex items-center gap-3 pr-10"><div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-500/10 text-xl text-cyan-300"><i class="fa-solid fa-shield-halved"></i></div><div><h3 id="passwordModalTitle" class="text-lg font-bold text-white">เปลี่ยนรหัสผ่าน</h3><p class="text-xs text-slate-400">ยืนยันรหัสผ่านเดิมเพื่อความปลอดภัย</p></div></div>
+        <form id="changePasswordForm" class="space-y-3" onsubmit="submitPasswordChange(event)">
+          <label class="block text-xs font-medium text-slate-300">รหัสผ่านเดิม<input id="currentPassword" type="password" autocomplete="current-password" required maxlength="100" class="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400" placeholder="กรอกรหัสผ่านเดิม"></label>
+          <label class="block text-xs font-medium text-slate-300">รหัสผ่านใหม่<input id="newPassword" type="password" autocomplete="new-password" required minlength="6" maxlength="100" class="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400" placeholder="อย่างน้อย 6 ตัวอักษร"></label>
+          <label class="block text-xs font-medium text-slate-300">ยืนยันรหัสผ่านใหม่<input id="confirmNewPassword" type="password" autocomplete="new-password" required minlength="6" maxlength="100" class="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"></label>
+          <p id="passwordChangeMessage" class="min-h-4 text-xs text-slate-400" aria-live="polite"></p>
+          <button id="passwordChangeSubmit" type="submit" class="w-full rounded-xl bg-gradient-to-r from-cyan-600 to-violet-600 py-3 text-sm font-bold text-white">บันทึกรหัสผ่านใหม่</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- ========================================================= -->
+    <!-- APPLICATION LOGIC & STATE MANAGEMENT -->
+    <!-- ========================================================= -->
+    <script>
+        // Initial Default Master Data
+        const DEFAULT_PRODUCTS = [
+            {
+                id: 'prod-netflix',
+                title: 'Netflix Premium 4K',
+                category: 'app',
+                image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=400&auto=format&fit=crop',
+                packages: [
+                    { name: '1 จอ (30 วัน) 4K Ultra HD', price: 129 },
+                    { name: 'เหมาจอส่วนตัว (30 วัน)', price: 429 }
+                ]
+            },
+            {
+                id: 'prod-valorant',
+                title: 'Valorant Points (VP)',
+                category: 'game',
+                image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop',
+                packages: [
+                    { name: '475 VP', price: 150 },
+                    { name: '1,000 VP', price: 300 },
+                    { name: '2,050 VP', price: 600 }
+                ]
+            },
+            {
+                id: 'prod-youtube',
+                title: 'YouTube Premium',
+                category: 'app',
+                image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=400&auto=format&fit=crop',
+                packages: [
+                    { name: 'Family Plan (1 เดือน)', price: 45 },
+                    { name: 'Family Plan (3 เดือน)', price: 125 }
+                ]
+            },
+            {
+                id: 'prod-freefire',
+                title: 'Free Fire Diamonds',
+                category: 'game',
+                image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop',
+                packages: [
+                    { name: '100 Diamonds', price: 35 },
+                    { name: '520 Diamonds', price: 160 }
+                ]
+            }
+        ];
+
+        const DEFAULT_ORDERS = [
+            {
+                id: 'MUMU-9821',
+                productTitle: 'Netflix Premium 4K',
+                packageName: '1 จอ (30 วัน) 4K Ultra HD',
+                targetAccount: 'mumu_customer@gmail.com',
+                price: 129,
+                paymentMethod: 'promptpay',
+                status: 'completed',
+                deliveredText: 'Acc: netflix_mumu1@mumu.com | Pass: Mumu99281 | PIN: 1234',
+                createdAt: new Date().toLocaleString('th-TH')
+            },
+            {
+                id: 'MUMU-9822',
+                productTitle: 'Valorant Points (VP)',
+                packageName: '1,000 VP',
+                targetAccount: 'MumuGamer#1122',
+                price: 300,
+                paymentMethod: 'wallet',
+                status: 'pending',
+                deliveredText: '',
+                createdAt: new Date().toLocaleString('th-TH')
+            }
+        ];
+
+        // System State
+        let db = {
+            products: [],
+            orders: [],
+            transactions: [],
+            user: null,
+            adminAuth: false
+        };
+
+        let currentActiveView = 'customer';
+        let currentSelectedProd = null;
+        let currentSelectedPkg = null;
+        let currentSelectedPayMethod = 'wallet';
+        let currentAdminTargetOrder = null;
+        const selectedAdminOrderIds = new Set();
+        const selectedAdminDepositIds = new Set();
+        let cart = [];
+        try { cart = JSON.parse(localStorage.getItem('mumu_cart') || '[]'); if (!Array.isArray(cart)) cart = []; } catch (_) { cart = []; }
+
+// Admin UI is only exposed on the explicit /admin route.
+const IS_ADMIN_ROUTE = window.location.pathname.replace(/\/$/, '') === '/admin';
+
+        // Initialize Application
+        window.onload = function() {
+            loadDatabase();
+            renderCustomerProducts();
+            updateUserUI();
+            updateAdminAuthUI();
+            const adminBtn = document.getElementById('btnAdminView');
+            if (adminBtn && !IS_ADMIN_ROUTE) adminBtn.classList.add('hidden');
+            if (!IS_ADMIN_ROUTE) {
+                closeAdminLoginModal();
+                switchView('customer');
+            } else if (db.adminAuth) {
+                switchView('admin');
+            } else {
+                switchView('admin');
+            }
+        };
+
+        function loadDatabase() {
+            const storedProd = localStorage.getItem('mumu_products');
+            const storedOrders = localStorage.getItem('mumu_orders');
+            const storedUser = localStorage.getItem('mumu_user');
+            const storedAdminAuth = localStorage.getItem('mumu_admin_auth');
+
+            db.products = storedProd ? JSON.parse(storedProd) : DEFAULT_PRODUCTS;
+            db.orders = storedOrders ? JSON.parse(storedOrders) : DEFAULT_ORDERS;
+            db.user = storedUser ? JSON.parse(storedUser) : null;
+            db.adminAuth = storedAdminAuth === 'true';
+
+            saveDatabase();
+        }
+
+        function saveDatabase() {
+            localStorage.setItem('mumu_products', JSON.stringify(db.products));
+            localStorage.setItem('mumu_orders', JSON.stringify(db.orders));
+            localStorage.setItem('mumu_user', JSON.stringify(db.user));
+            localStorage.setItem('mumu_admin_auth', db.adminAuth);
+            updateUserUI();
+            updatePendingBadge();
+        }
+
+        function resetToDefaultData() {
+            db.products = DEFAULT_PRODUCTS;
+            db.orders = DEFAULT_ORDERS;
+            db.user = null;
+            saveDatabase();
+            renderCustomerProducts();
+            renderAdminOrders();
+            renderAdminProducts();
+            showToast('รีเซ็ตข้อมูลกลับค่าเริ่มต้น Mumu Topup เรียบร้อย');
+        }
+
+        // View Switching & Authentication Gatekeeper
+        function switchView(view) {
+            // Normal storefront can never open or render the admin area.
+            if (view === 'admin' && !IS_ADMIN_ROUTE) {
+                closeAdminLoginModal();
+                return;
+            }
+            if (view === 'admin' && !db.adminAuth) {
+                openAdminLoginModal();
+                return;
+            }
+
+            currentActiveView = view;
+            const custView = document.getElementById('customerView');
+            const adminView = document.getElementById('adminView');
+            const btnCust = document.getElementById('btnCustomerView');
+            const btnAdmin = document.getElementById('btnAdminView');
+
+            if (view === 'customer') {
+                closeAdminLoginModal();
+                custView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                if (btnAdmin) btnAdmin.classList.add('hidden');
+                if (btnCust) btnCust.className = 'flex items-center space-x-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-gradient-to-r from-mumu-purple to-mumu-pink text-white shadow-md';
+                renderCustomerProducts();
+            } else {
+                if (!IS_ADMIN_ROUTE) return;
+                custView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                if (btnAdmin) btnAdmin.classList.remove('hidden');
+                if (btnAdmin) btnAdmin.className = 'flex items-center space-x-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-gradient-to-r from-mumu-purple to-mumu-pink text-white shadow-md relative';
+                if (btnCust) btnCust.className = 'flex items-center space-x-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition text-slate-400 hover:text-white';
+                renderAdminDashboard();
+            }
+        }
+
+        // ADMIN AUTHENTICATION LOGIC
+        function openAdminLoginModal() {
+            if (!IS_ADMIN_ROUTE) return;
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUserAuth').value.trim();
+            const pass = document.getElementById('adminPassAuth').value.trim();
+
+            if (user === 'admin' && pass === 'mumu1234') {
+                db.adminAuth = true;
+                saveDatabase();
+                updateAdminAuthUI();
+                closeAdminLoginModal();
+                showToast('เข้าสู่ระบบ Admin สำเร็จ!');
+                switchView('admin');
+            } else {
+                showToast('Username หรือ Password ไม่ถูกต้อง!');
+            }
+        }
+
+        function adminLogout() {
+            db.adminAuth = false;
+            saveDatabase();
+            updateAdminAuthUI();
+            switchView('customer');
+            showToast('ออกจากระบบ Admin เรียบร้อยแล้ว');
+        }
+
+        function updateAdminAuthUI() {
+            const badge = document.getElementById('adminAuthBadge');
+            if (db.adminAuth) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // CUSTOMER PRODUCTS & SEARCH LOGIC
+        function renderCustomerProducts(items = db.products) {
+            const grid = document.getElementById('customerProductGrid');
+            grid.innerHTML = '';
+
+            items.forEach(p => {
+                const minPrice = Math.min(...p.packages.map(pkg => pkg.price));
+                const card = document.createElement('div');
+                card.className = 'mumu-card rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between group';
+                card.onclick = () => openProductModal(p.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-32 sm:h-36 overflow-hidden">
+                            <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-mumu-dark via-mumu-dark/20 to-transparent"></div>
+                            <span class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold ${p.category === 'app' ? 'bg-mumu-pink/20 text-mumu-pink border border-mumu-pink/30' : 'bg-mumu-cyan/20 text-mumu-cyan border border-mumu-cyan/30'}">
+                                ${p.category === 'app' ? 'แอปพรีเมียม' : 'เติมเกม'}
+                            </span>
+                        </div>
+                        <div class="p-3">
+                            <h3 class="text-xs sm:text-sm font-bold text-white line-clamp-1 group-hover:text-mumu-pink transition">${p.title}</h3>
+                        </div>
+                    </div>
+                    <div class="p-3 pt-0 flex items-center justify-between border-t border-slate-800/60 mt-2">
+                        <span class="text-xs font-black text-emerald-400">฿${minPrice}</span>
+                        <span class="text-[10px] bg-mumu-pink/20 text-mumu-pink px-2 py-1 rounded-lg font-bold">สั่งซื้อ</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = 'cat-btn px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-mumu-card text-slate-300 hover:bg-slate-800 border border-slate-800';
+            });
+            document.getElementById(`cat-${cat}`).className = 'cat-btn px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gradient-to-r from-mumu-purple to-mumu-pink text-white';
+
+            if (cat === 'all') renderCustomerProducts(db.products);
+            else renderCustomerProducts(db.products.filter(p => p.category === cat));
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = db.products.filter(p => p.title.toLowerCase().includes(query));
+            renderCustomerProducts(filtered);
+        }
+
+        function openProductModal(prodId) {
+            if (!db.user) {
+                showToast('กรุณาเข้าสู่ระบบก่อนสั่งซื้อสินค้า');
+                openAuthModal('login');
+                return;
+            }
+            const p = db.products.find(item => item.id === prodId);
+            if (!p) return;
+
+            currentSelectedProd = p;
+            currentSelectedPkg = p.packages[0];
+
+            document.getElementById('modalProductImg').src = p.image;
+            document.getElementById('modalProductTitle').innerText = p.title;
+            document.getElementById('modalProductCategory').innerText = p.category === 'app' ? 'แอปพรีเมียม' : 'เติมเกม';
+            document.getElementById('userAccountInput').value = '';
+
+            const pkgContainer = document.getElementById('packageList');
+            pkgContainer.innerHTML = '';
+
+            p.packages.forEach((pkg, index) => {
+                const btn = document.createElement('div');
+                btn.className = `p-2.5 rounded-xl border cursor-pointer text-center transition ${index === 0 ? 'border-mumu-pink bg-mumu-pink/10' : 'border-slate-800 bg-slate-950'}`;
+                btn.onclick = () => {
+                    currentSelectedPkg = pkg;
+                    document.querySelectorAll('#packageList > div').forEach(d => d.className = 'p-2.5 rounded-xl border cursor-pointer text-center transition border-slate-800 bg-slate-950');
+                    btn.className = 'p-2.5 rounded-xl border cursor-pointer text-center transition border-mumu-pink bg-mumu-pink/10';
+                    document.getElementById('modalTotalPrice').innerText = `฿${pkg.price.toFixed(2)}`;
+                };
+                btn.innerHTML = `
+                    <div class="text-xs font-bold text-white">${pkg.name}</div>
+                    <div class="text-xs font-extrabold text-emerald-400">฿${pkg.price}</div>
+                `;
+                pkgContainer.appendChild(btn);
+            });
+
+            document.getElementById('modalTotalPrice').innerText = `฿${p.packages[0].price.toFixed(2)}`;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function selectPayment(method) {
+            currentSelectedPayMethod = method;
+            document.querySelectorAll('.pay-card').forEach(c => c.className = 'pay-card border border-slate-800 bg-slate-950 rounded-2xl p-3 text-center cursor-pointer');
+            document.getElementById(`pay-${method}`).className = 'pay-card border-2 border-mumu-pink bg-mumu-pink/10 rounded-2xl p-3 text-center cursor-pointer';
+        }
+
+        function openHistoryModal() {
+    const list = document.getElementById('customerHistoryList');
+    list.innerHTML = '';
+
+    const myOrders = db.user
+        ? db.orders.filter(ord => String(ord.user_id) === String(db.user.id))
+        : [];    
+
+if (myOrders.length === 0) {
+        list.innerHTML = `<div class="text-center text-xs text-slate-500 py-8">ไม่มีประวัติการสั่งซื้อ</div>`;
+    } else {
+        myOrders.forEach(ord => {
+                    const statusBadge = ord.status === 'completed' 
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">สำเร็จ</span>`
+                        : (ord.status === 'pending' ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">รอดำเนินการ</span>` : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">ยกเลิก</span>`);
+
+                    const div = document.createElement('div');
+                    div.className = 'p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs';
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-white">${ord.productTitle} (${ord.packageName})</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-slate-400 text-[11px] flex justify-between">
+                            <span>Target: ${ord.targetAccount}</span>
+                            <span class="font-bold text-emerald-400">฿${ord.price}</span>
+                        </div>
+                        ${ord.deliveredText ? `
+                            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 font-mono text-[11px]">
+                                <i class="fa-solid fa-key text-emerald-400 mr-1"></i> ${ord.deliveredText}
+                            </div>
+                        ` : ''}
+                    `;
+                    list.appendChild(div);
+                });
+            }
+
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function openTransactionModal() {
+            const list = document.getElementById('customerTransactionList');
+            const txs = db.transactions || [];
+            document.getElementById('transactionBalance').textContent = `ยอดคงเหลือ ฿${Number(db.user?.balance || 0).toFixed(2)}`;
+            if (!db.user) {
+                list.innerHTML = '<div class="text-center text-xs text-slate-500 py-8">กรุณาเข้าสู่ระบบก่อนดูประวัติธุรกรรม</div>';
+            } else if (!txs.length) {
+                list.innerHTML = '<div class="text-center text-xs text-slate-500 py-8">ยังไม่มีประวัติธุรกรรม</div>';
+            } else {
+                list.innerHTML = '';
+                txs.forEach(tx => {
+                    const credit = tx.type === 'credit' || Number(tx.amount) > 0;
+                    const div = document.createElement('div');
+                    div.className = 'p-4 rounded-2xl bg-slate-950 border border-slate-800';
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-9 h-9 rounded-xl ${credit ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'} flex items-center justify-center shrink-0">
+                                    <i class="fa-solid ${credit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-sm font-bold text-white truncate">${tx.description}</div>
+                                    <div class="text-[10px] text-slate-500">${tx.created_at ? new Date(tx.created_at).toLocaleString('th-TH') : ''}${tx.reference_id ? ' · '+tx.reference_id : ''}</div>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <div class="font-black ${credit ? 'text-emerald-400' : 'text-red-400'}">${credit ? '+' : ''}฿${Number(tx.amount).toFixed(2)}</div>
+                                <div class="text-[10px] text-slate-500">คงเหลือ ฿${Number(tx.balance_after).toFixed(2)}</div>
+                            </div>
+                        </div>`;
+                    list.appendChild(div);
+                });
+            }
+            document.getElementById('transactionModal').classList.remove('hidden');
+        }
+        function closeTransactionModal() { document.getElementById('transactionModal').classList.add('hidden'); }
+
+        function openAccountModal() {
+            if (!db.user) { openAuthModal('login'); return; }
+            document.getElementById('accountModalName').textContent = db.user.name || 'สมาชิก Mumu';
+            document.getElementById('accountModalEmail').textContent = db.user.email || '—';
+            document.getElementById('accountModalBalance').textContent = `฿${Number(db.user.balance || 0).toFixed(2)}`;
+            const modal = document.getElementById('accountModal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+        }
+        function closeAccountModal() { const m=document.getElementById('accountModal');m.classList.add('hidden');m.classList.remove('flex'); }
+        function openPasswordModal() {
+            if (!db.user) { openAuthModal('login'); return; }
+            document.getElementById('changePasswordForm').reset();
+            document.getElementById('passwordChangeMessage').textContent = '';
+            const modal=document.getElementById('passwordModal');modal.classList.remove('hidden');modal.classList.add('flex');
+            setTimeout(()=>document.getElementById('currentPassword').focus(),50);
+        }
+        function closePasswordModal() { const m=document.getElementById('passwordModal');m.classList.add('hidden');m.classList.remove('flex'); }
+        async function submitPasswordChange(e) {
+            e.preventDefault();
+            const currentPassword=document.getElementById('currentPassword').value;
+            const newPassword=document.getElementById('newPassword').value;
+            const confirmPassword=document.getElementById('confirmNewPassword').value;
+            const message=document.getElementById('passwordChangeMessage');
+            const button=document.getElementById('passwordChangeSubmit');
+            if(newPassword.length<6 || newPassword.length>100){message.textContent='รหัสผ่านใหม่ต้องมี 6–100 ตัวอักษร';message.className='min-h-4 text-xs text-amber-300';return;}
+            if(newPassword!==confirmPassword){message.textContent='รหัสผ่านใหม่และการยืนยันไม่ตรงกัน';message.className='min-h-4 text-xs text-amber-300';return;}
+            if(currentPassword===newPassword){message.textContent='กรุณาตั้งรหัสผ่านใหม่ที่ต่างจากรหัสผ่านเดิม';message.className='min-h-4 text-xs text-amber-300';return;}
+            button.disabled=true;button.textContent='กำลังบันทึก…';message.textContent='';
+            try {
+                await apiFetch('/auth/change-password',{method:'POST',body:JSON.stringify({currentPassword,newPassword})});
+                document.getElementById('changePasswordForm').reset();
+                message.textContent='เปลี่ยนรหัสผ่านสำเร็จ';message.className='min-h-4 text-xs text-emerald-300';
+                showToast('เปลี่ยนรหัสผ่านสำเร็จ');
+                setTimeout(closePasswordModal,900);
+            } catch(err) {
+                const messages={INVALID_CURRENT_PASSWORD:'รหัสผ่านเดิมไม่ถูกต้อง',INVALID_PASSWORD:'รหัสผ่านใหม่ต้องมี 6–100 ตัวอักษร',PASSWORD_UNCHANGED:'รหัสผ่านใหม่ต้องต่างจากรหัสผ่านเดิม',LOGIN_REQUIRED:'กรุณาเข้าสู่ระบบใหม่'};
+                message.textContent=messages[err.message]||'เปลี่ยนรหัสผ่านไม่สำเร็จ กรุณาลองอีกครั้ง';message.className='min-h-4 text-xs text-rose-300';
+            } finally {button.disabled=false;button.textContent='บันทึกรหัสผ่านใหม่';}
+        }
+
+        function openWalletModal() {
+            document.getElementById('walletModal').classList.remove('hidden'); document.getElementById('walletModal').classList.add('flex');
+        }
+
+        function closeWalletModal() {
+            document.getElementById('walletModal').classList.add('hidden'); document.getElementById('walletModal').classList.remove('flex');
+        }
+
+        function toggleMumuMenu(force) {
+            const button = document.getElementById('mumuMenuButton');
+            const sidebar = document.getElementById('mumuSidebarDesktop');
+            const drawer = document.getElementById('mumuDrawer');
+            const isDesktop = window.matchMedia('(min-width: 761px)').matches;
+            if (isDesktop) {
+                const currentlyOpen = !document.body.classList.contains('mumu-sidebar-collapsed');
+                const open = typeof force === 'boolean' ? force : !currentlyOpen;
+                document.body.classList.toggle('mumu-sidebar-collapsed', !open);
+                if (sidebar) {
+                    sidebar.setAttribute('aria-hidden', String(!open));
+                    sidebar.inert = !open;
+                }
+                if (button) {
+                    button.setAttribute('aria-expanded', String(open));
+                    button.setAttribute('aria-label', open ? 'ซ่อนเมนู' : 'เปิดเมนู');
+                    button.setAttribute('title', open ? 'ซ่อนเมนู' : 'เปิดเมนู');
+                }
+                return;
+            }
+            const currentlyOpen = document.body.classList.contains('mumu-menu-open');
+            const open = typeof force === 'boolean' ? force : !currentlyOpen;
+            document.body.classList.toggle('mumu-menu-open', open);
+            if (drawer) drawer.setAttribute('aria-hidden', String(!open));
+            if (button) { button.setAttribute('aria-expanded', String(open)); button.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู'); }
+            document.body.style.overflow = open ? 'hidden' : '';
+        }
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') toggleMumuMenu(false); });
+        window.addEventListener('resize', () => {
+            if (window.matchMedia('(min-width: 761px)').matches) {
+                document.body.classList.remove('mumu-menu-open');
+                document.body.classList.add('mumu-sidebar-collapsed');
+                document.body.style.overflow = '';
+                const drawer = document.getElementById('mumuDrawer'); if (drawer) drawer.setAttribute('aria-hidden', 'true');
+                const sidebar = document.getElementById('mumuSidebarDesktop'); if (sidebar) { sidebar.setAttribute('aria-hidden','true'); sidebar.inert = true; }
+                const button = document.getElementById('mumuMenuButton'); if (button) { button.setAttribute('aria-expanded','false'); button.setAttribute('aria-label','เปิดเมนู'); button.setAttribute('title','เปิดเมนู'); }
+            } else {
+                document.body.classList.remove('mumu-sidebar-collapsed');
+            }
+        });
+
+        function updateUserUI() {
+            const logged = !!db.user;
+            // Sidebar identity follows the account authenticated in the current session.
+            const sidebarName = document.getElementById('desktopSidebarName');
+            const sidebarSub = document.getElementById('desktopSidebarSub');
+            if (sidebarName) sidebarName.textContent = logged ? (db.user.name || 'สมาชิก Mumu') : 'Mumu';
+            if (sidebarSub) sidebarSub.textContent = logged ? (db.user.email || `สมาชิก #${db.user.id || ''}`) : 'สมาชิกระดับทั่วไป';
+            document.getElementById('authButton').classList.toggle('hidden', logged);
+            document.getElementById('loggedInBox').classList.toggle('hidden', !logged);
+            document.getElementById('loggedInBox').classList.toggle('flex', logged);
+            if (logged) {
+                document.getElementById('currentUserBalance').innerText = `฿${Number(db.user.balance).toFixed(2)}`;
+                document.getElementById('currentUserName').innerText = db.user.name;
+                const adminBal=document.getElementById('adminUserDetailBalance'); if(adminBal) adminBal.innerText = `฿${Number(db.user.balance).toFixed(2)}`;
+            } else {
+                document.getElementById('currentUserBalance').innerText = '฿0.00';
+                const adminBal=document.getElementById('adminUserDetailBalance'); if(adminBal) adminBal.innerText = '฿0.00';
+            }
+            const drawerName = document.getElementById('mumuDrawerName');
+            const drawerSub = document.getElementById('mumuDrawerSub');
+            const drawerWallet = document.getElementById('mumuDrawerWallet');
+            const drawerGuest = document.getElementById('mumuDrawerGuest');
+            const drawerMember = document.getElementById('mumuDrawerMember');
+            if (drawerName) drawerName.textContent = logged ? (db.user.name || 'สมาชิก Mumu') : 'ยินดีต้อนรับ';
+            if (drawerSub) drawerSub.textContent = logged ? (db.user.email || 'สมาชิก Mumu') : 'เข้าสู่ระบบเพื่อจัดการบัญชี';
+            if (drawerWallet) drawerWallet.classList.toggle('hidden', !logged);
+            if (drawerGuest) drawerGuest.classList.toggle('hidden', logged);
+            if (drawerMember) drawerMember.classList.toggle('hidden', !logged);
+            const drawerBalance = document.getElementById('mumuDrawerBalance');
+            if (drawerBalance) drawerBalance.textContent = `฿${Number(logged ? db.user.balance : 0).toFixed(2)}`;
+            const badge = document.getElementById('cartBadge');
+            const drawerBadge = document.getElementById('mumuDrawerCartBadge');
+            if (badge && drawerBadge) { drawerBadge.textContent = badge.textContent || '0'; drawerBadge.classList.toggle('hidden', badge.classList.contains('hidden')); }
+        }
+
+        function updatePendingBadge() {
+            const pendingCount = db.orders.filter(o => o.status === 'pending').length;
+            const badge = document.getElementById('pendingBadge');
+            if (pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function scrollToCatalog() {
+            document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Safely escape member data before placing it into HTML.
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// ADMIN DASHBOARD LOGIC
+        function filterAdminUsers(query) {
+            const select = document.getElementById('adminUserSelect');
+            if (!select) return;
+            const current = select.value;
+            const q = String(query || '').trim().toLocaleLowerCase();
+            const allUsers = Array.isArray(db.adminUsers) ? db.adminUsers : [];
+            const filtered = allUsers.filter(u => {
+                const name = String(u.name || '').toLocaleLowerCase();
+                const email = String(u.email || '').toLocaleLowerCase();
+                const id = String(u.id || '');
+                return !q || name.includes(q) || email.includes(q) || id.includes(q);
+            });
+            select.innerHTML = '<option value="">-- เลือกสมาชิก (' + filtered.length + ') --</option>' + filtered.map(u =>
+                `<option value="${u.id}">${escapeHtml(u.name)}${u.email ? ' — ' + escapeHtml(u.email) : ''} (฿${Number(u.balance).toFixed(2)})</option>`
+            ).join('');
+            const count = document.getElementById('adminUserSearchCount');
+            if (count) count.textContent = q ? `พบ ${filtered.length} จาก ${allUsers.length} สมาชิก` : `สมาชิกทั้งหมด ${allUsers.length} คน · ค้นหาได้ด้วยชื่อ อีเมล หรือ Member ID`;
+            if (current && filtered.some(u => String(u.id) === String(current))) {
+                select.value = current;
+            } else if (current) {
+                select.value = '';
+                selectAdminUser('');
+            }
+        }
+
+        async function loadAdminUsers() {
+            if (!db.adminAuth) return;
+            const select = document.getElementById('adminUserSelect');
+            if (!select) return;
+            const current = select.value;
+            try {
+                // Fetch member records from the protected admin endpoint; filtering is local for instant results.
+                const data = await apiFetch('/admin/users');
+                let users = Array.isArray(data.users) ? data.users : [];
+                db.adminUsers = users;
+
+                if (!users.length) {
+                    const boot = await apiFetch('/bootstrap');
+                    users = Array.isArray(boot.adminUsers) ? boot.adminUsers : [];
+                    db.adminUsers = users;
+                }
+
+                filterAdminUsers(document.getElementById('adminUserSearch')?.value || '');
+                if (current && users.some(u => String(u.id) === String(current))) {
+                    select.value = current;
+                    selectAdminUser(current);
+                } else {
+                    select.value = '';
+                    selectAdminUser('');
+                }
+                if (!users.length) showToast('ยังไม่มีสมาชิกในระบบ กรุณาสมัครสมาชิกก่อน');
+            } catch(e) {
+                console.error('loadAdminUsers:', e);
+                select.innerHTML = '<option value="">-- โหลดรายชื่อไม่สำเร็จ --</option>';
+                showToast('โหลดรายชื่อสมาชิกไม่สำเร็จ: ' + (e.message || 'UNKNOWN_ERROR'));
+            }
+        }
+
+        function selectAdminUser(id) {
+            const u=(db.adminUsers||[]).find(x=>String(x.id)===String(id));
+            const name=document.getElementById('adminUserDetailName');
+            const email=document.getElementById('adminUserDetailEmail');
+            const bal=document.getElementById('adminUserDetailBalance');
+            if(!u){ name.textContent='ยังไม่ได้เลือกสมาชิก'; email.textContent='เลือกสมาชิกจากรายการด้านล่าง'; bal.textContent='฿0.00'; return; }
+            name.textContent=u.name || 'ไม่ระบุชื่อ';
+            email.textContent=u.email || `สมาชิก ID ${u.id}`;
+            bal.textContent=`฿${Number(u.balance).toFixed(2)}`;
+        }
+
+        function renderAdminDashboard() {
+            const totalRev = db.orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.price, 0);
+            const pendingCount = db.orders.filter(o => o.status === 'pending').length;
+
+            document.getElementById('adminTotalRevenue').innerText = `฿${totalRev.toFixed(2)}`;
+            document.getElementById('adminPendingOrders').innerText = pendingCount;
+            document.getElementById('adminTotalProducts').innerText = db.products.length;
+
+            renderAdminOrders();
+            renderAdminProducts();
+            renderAdminDeposits();
+            loadAdminUsers();
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.className = 'admin-tab-btn pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent hover:text-white transition flex items-center gap-2';
+            });
+            document.getElementById(`tabBtn-${tab}`).className = 'admin-tab-btn pb-3 text-sm font-bold text-mumu-pink border-b-2 border-mumu-pink transition flex items-center gap-2';
+
+            document.getElementById('adminTab-orders').classList.add('hidden');
+            document.getElementById('adminTab-products').classList.add('hidden');
+            document.getElementById('adminTab-users').classList.add('hidden');
+            document.getElementById('adminTab-deposits').classList.add('hidden');
+
+            document.getElementById(`adminTab-${tab}`).classList.remove('hidden');
+            if (tab === 'users') loadAdminUsers();
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrderTableBody');
+            tbody.innerHTML = '';
+            const filterStatus = document.getElementById('orderStatusFilter')?.value || 'all';
+            const query = (document.getElementById('adminOrderMemberSearch')?.value || '').trim().toLocaleLowerCase();
+            const usersById = new Map((db.adminUsers || []).map(u => [String(u.id), u]));
+            let list = db.orders.filter(o => filterStatus === 'all' || o.status === filterStatus);
+            list = list.filter(o => {
+                const u = usersById.get(String(o.user_id)) || {};
+                const name = String(o.user_name || u.name || 'สมาชิกที่ไม่พบข้อมูล');
+                const email = String(o.user_email || u.email || '');
+                const id = String(o.user_id ?? '');
+                return !query || `${name} ${email} ${id}`.toLocaleLowerCase().includes(query);
+            });
+            const groups = new Map();
+            for (const ord of list) {
+                const key = ord.user_id == null ? `unknown-${ord.id}` : String(ord.user_id);
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(ord);
+            }
+            if (!groups.size) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-slate-500">ไม่พบสมาชิกหรือคำสั่งซื้อที่ตรงกับเงื่อนไข</td></tr>`;
+                updateBulkOrderSelectionUI();
+                return;
+            }
+            for (const [key, memberOrders] of groups) {
+                const first = memberOrders[0];
+                const u = usersById.get(String(first.user_id)) || {};
+                const name = first.user_name || u.name || 'สมาชิกที่ไม่พบข้อมูล';
+                const email = first.user_email || u.email || 'ไม่มีอีเมลในข้อมูลคำสั่งซื้อ';
+                const pendingIds = memberOrders.filter(o => o.status === 'pending').map(o => String(o.id));
+                const header = document.createElement('tr');
+                header.className = 'bg-slate-900/90 border-y border-slate-700';
+                header.innerHTML = `<td colspan="8" class="p-4"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><div class="font-bold text-white text-sm"><i class="fa-solid fa-user-circle text-mumu-pink mr-2"></i>${escapeHtml(name)}</div><div class="text-[11px] text-slate-400 mt-1">Member ID: ${escapeHtml(String(first.user_id ?? 'ไม่ทราบ'))} · ${escapeHtml(email)}</div><div class="text-[11px] text-slate-500 mt-1">${memberOrders.length} ออเดอร์ · รออนุมัติ ${pendingIds.length} รายการ</div></div><button type="button" data-member-key="${escapeHtml(key)}" class="member-select-pending ${pendingIds.length ? '' : 'hidden'} bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 px-3 py-2 rounded-lg text-xs font-bold">เลือกออเดอร์ที่รอของบัญชีนี้ (${pendingIds.length})</button></div></td>`;
+                tbody.appendChild(header);
+                const selectButton = header.querySelector('.member-select-pending');
+                if (selectButton) selectButton.addEventListener('click', () => {
+                    const allSelected = pendingIds.length && pendingIds.every(id => selectedAdminOrderIds.has(id));
+                    // Bulk approval is intentionally limited to one customer's account at a time.
+                    selectedAdminOrderIds.clear();
+                    if (!allSelected) pendingIds.forEach(id => selectedAdminOrderIds.add(id));
+                    renderAdminOrders();
+                });
+                for (const ord of memberOrders) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-900/50 transition';
+                    const statusBadge = ord.status === 'completed'
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">สำเร็จ</span>`
+                        : (ord.status === 'pending' ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">รอดำเนินการ</span>` : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">ยกเลิก</span>`);
+                    tr.innerHTML = `
+                        <td class="p-3">${ord.status === 'pending' ? `<input type="checkbox" class="admin-order-select accent-emerald-400" aria-label="เลือกออเดอร์ ${escapeHtml(String(ord.id))}" ${selectedAdminOrderIds.has(String(ord.id)) ? 'checked' : ''}>` : ''}</td>
+                        <td class="p-4 font-mono text-slate-200">${escapeHtml(String(ord.id))}</td>
+                        <td class="p-4"><div class="font-bold text-white">${escapeHtml(String(ord.productTitle || ''))}</div><div class="text-[11px] text-slate-400">${escapeHtml(String(ord.packageName || ''))}</div></td>
+                        <td class="p-4 font-mono text-mumu-cyan">${escapeHtml(String(ord.targetAccount || ''))}</td>
+                        <td class="p-4 font-bold text-emerald-400">฿${Number(ord.price || 0).toFixed(2)}</td>
+                        <td class="p-4 uppercase text-[10px] font-bold text-slate-400">${escapeHtml(String(ord.paymentMethod || ''))}</td>
+                        <td class="p-4">${statusBadge}</td>
+                        <td class="p-4 text-center">${ord.status === 'pending' ? `<div class="flex justify-center space-x-1"><button onclick="openAdminDeliverModal('${escapeHtml(String(ord.id))}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-[10px] font-bold transition">อนุมัติ/ส่งรหัส</button><button onclick="cancelOrder('${escapeHtml(String(ord.id))}')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-lg text-[10px] font-bold transition">ยกเลิก</button></div>` : `<span class="text-[10px] text-slate-500">ดำเนินการแล้ว</span>`}</td>`;
+                    tbody.appendChild(tr);
+                    const checkbox = tr.querySelector('.admin-order-select');
+                    if (checkbox) checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            const selectedOrder = db.orders.find(o => String(o.id) === String(ord.id));
+                            const selectedOwner = selectedOrder?.user_id;
+                            const otherOwnerSelected = [...selectedAdminOrderIds].some(id => {
+                                const existing = db.orders.find(o => String(o.id) === id);
+                                return existing && String(existing.user_id ?? '') !== String(selectedOwner ?? '');
+                            });
+                            if (otherOwnerSelected) {
+                                selectedAdminOrderIds.clear();
+                                showToast('เปลี่ยนบัญชีที่เลือกแล้ว เพื่อป้องกันการอนุมัติข้ามสมาชิก');
+                            }
+                            selectedAdminOrderIds.add(String(ord.id));
+                        } else selectedAdminOrderIds.delete(String(ord.id));
+                        updateBulkOrderSelectionUI();
+                    });
+                }
+            }
+            updateBulkOrderSelectionUI();
+        }
+
+        function updateBulkOrderSelectionUI() {
+            const pendingIds = new Set(db.orders.filter(o => o.status === 'pending').map(o => String(o.id)));
+            for (const id of selectedAdminOrderIds) if (!pendingIds.has(id)) selectedAdminOrderIds.delete(id);
+            // Defense-in-depth: never keep selections from multiple customer accounts.
+            const owners = new Set([...selectedAdminOrderIds].map(id => {
+                const order = db.orders.find(o => String(o.id) === id);
+                return String(order?.user_id ?? '');
+            }));
+            if (owners.size > 1) selectedAdminOrderIds.clear();
+            const count = document.getElementById('bulkSelectedOrderCount');
+            const button = document.getElementById('bulkApproveOrdersButton');
+            if (count) count.textContent = String(selectedAdminOrderIds.size);
+            if (button) button.disabled = selectedAdminOrderIds.size === 0;
+            const allBox = document.getElementById('selectAllPendingOrders');
+            if (allBox) { allBox.checked = false; allBox.indeterminate = false; allBox.disabled = true; }
+        }
+
+        function toggleSelectAllPendingOrders(checked) {
+            // Kept for compatibility with old markup; selection is now per customer group.
+            selectedAdminOrderIds.clear();
+            if (checked) showToast('กรุณาเลือกออเดอร์จากปุ่มของบัญชีสมาชิกที่ต้องการ');
+            renderAdminOrders();
+        }
+
+        function openBulkApproveModal() {
+            const selected = db.orders.filter(o => o.status === 'pending' && selectedAdminOrderIds.has(String(o.id)));
+            if (!selected.length) { showToast('กรุณาเลือกออเดอร์ที่รอดำเนินการก่อน'); return; }
+            if (new Set(selected.map(o => String(o.user_id ?? ''))).size > 1) { selectedAdminOrderIds.clear(); renderAdminOrders(); showToast('กรุณาเลือกออเดอร์ของสมาชิกเพียงบัญชีเดียวต่อครั้ง'); return; }
+            const fields = document.getElementById('bulkDeliverOrderFields');
+            fields.innerHTML = '';
+            for (const ord of selected) {
+                const card = document.createElement('div');
+                card.className = 'rounded-xl border border-slate-700 bg-slate-950/60 p-3';
+                const title = document.createElement('div');
+                title.className = 'text-sm font-bold text-white mb-1';
+                title.textContent = `ออเดอร์ ${ord.id} — ${ord.productTitle} (${ord.packageName})`;
+                const detail = document.createElement('div');
+                detail.className = 'text-[11px] text-slate-400 mb-2';
+                detail.textContent = `บัญชี/ID: ${ord.targetAccount} · ราคา ฿${Number(ord.price || 0).toFixed(2)}`;
+                const label = document.createElement('label');
+                label.className = 'block text-xs font-bold text-slate-300 mb-1';
+                label.textContent = 'ข้อความหรือรหัสส่งมอบสำหรับออเดอร์นี้';
+                const textarea = document.createElement('textarea');
+                textarea.rows = 2;
+                textarea.maxLength = 1000;
+                textarea.dataset.orderId = String(ord.id);
+                textarea.className = 'w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white';
+                textarea.placeholder = 'กรอกรหัส/ข้อมูลส่งมอบเฉพาะออเดอร์นี้';
+                textarea.value = ord.deliveredText || '';
+                card.append(title, detail, label, textarea);
+                fields.appendChild(card);
+            }
+            document.getElementById('adminBulkDeliverModal').classList.remove('hidden');
+        }
+
+        function closeBulkApproveModal() {
+            document.getElementById('adminBulkDeliverModal').classList.add('hidden');
+        }
+
+        async function confirmBulkApproveOrders() {
+            const textareas = [...document.querySelectorAll('#bulkDeliverOrderFields textarea[data-order-id]')];
+            const orderIds = textareas.map(el => el.dataset.orderId);
+            if (!orderIds.length) { showToast('ไม่มีออเดอร์ที่เลือก'); return; }
+            const deliveredTexts = {};
+            for (const el of textareas) deliveredTexts[el.dataset.orderId] = el.value.trim() || 'เติมเงินเข้าไอดีเรียบร้อยแล้ว';
+            const btn = document.getElementById('confirmBulkApproveButton');
+            btn.disabled = true;
+            try {
+                const data = await apiFetch('/admin/orders/bulk-complete', {method:'POST', body:JSON.stringify({orderIds, deliveredTexts})});
+                for (const id of data.completed || orderIds) selectedAdminOrderIds.delete(String(id));
+                closeBulkApproveModal();
+                await refreshFromServer();
+                showToast(`อนุมัติคำสั่งซื้อ ${data.count || orderIds.length} รายการเรียบร้อยแล้ว`);
+            } catch (e) {
+                showToast(e.message === 'ORDER_NOT_FOUND_OR_NOT_PENDING' ? 'มีบางออเดอร์ถูกดำเนินการไปแล้ว กรุณารีเฟรชแล้วเลือกใหม่' : (e.message === 'MIXED_ORDER_OWNERS' ? 'เลือกอนุมัติได้เฉพาะออเดอร์ของสมาชิกบัญชีเดียวกัน' : `อนุมัติหลายรายการไม่สำเร็จ: ${e.message || 'UNKNOWN_ERROR'}`));
+            } finally { btn.disabled = false; }
+        }
+
+        function openAdminDeliverModal(orderId) {
+            currentAdminTargetOrder = db.orders.find(o => o.id === orderId);
+            if (!currentAdminTargetOrder) return;
+
+            document.getElementById('deliverOrderInfo').innerText = `ออเดอร์: ${currentAdminTargetOrder.id} - ${currentAdminTargetOrder.productTitle}`;
+            document.getElementById('deliverAccountText').value = '';
+            document.getElementById('adminDeliverModal').classList.remove('hidden');
+        }
+
+        function closeAdminDeliverModal() {
+            document.getElementById('adminDeliverModal').classList.add('hidden');
+        }
+
+        function renderAdminProducts() {
+            const grid = document.getElementById('adminProductGrid');
+            grid.innerHTML = '';
+
+            db.products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'mumu-card p-4 rounded-2xl space-y-3';
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-white text-xs">${p.title}</h4>
+                            <span class="text-[10px] text-mumu-pink uppercase font-bold">${p.category}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="openEditProductModal('${p.id}')" class="text-slate-500 hover:text-mumu-cyan text-xs p-1" title="แก้ไขสินค้า">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteProduct('${p.id}')" class="text-slate-500 hover:text-red-400 text-xs p-1" title="ลบสินค้า">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 space-y-1 text-[11px]">
+                        ${p.packages.map(pkg => `
+                            <div class="flex justify-between text-slate-300">
+                                <span>${pkg.name}</span>
+                                <span class="font-bold text-emerald-400">฿${pkg.price}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductModal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.add('hidden');
+        }
+
+        function addPackageRow(containerId, name = '', price = '') {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'package-editor-row flex items-center gap-2';
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text'; nameInput.className = 'package-name bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white flex-1 min-w-0';
+            nameInput.placeholder = 'ชื่อแพ็กเกจ เช่น 30 วัน'; nameInput.value = name;
+            const priceInput = document.createElement('input');
+            priceInput.type = 'number'; priceInput.min = '0.01'; priceInput.step = '0.01';
+            priceInput.className = 'package-price bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white w-24';
+            priceInput.placeholder = 'ราคา'; priceInput.value = price;
+            const remove = document.createElement('button');
+            remove.type = 'button'; remove.className = 'rounded-lg bg-red-500/10 text-red-300 px-3 py-2';
+            remove.title = 'ลบแพ็กเกจ'; remove.textContent = '×';
+            remove.addEventListener('click', () => {
+                if (container.querySelectorAll('.package-editor-row').length <= 1) {
+                    nameInput.value = ''; priceInput.value = '';
+                    showToast('สินค้าต้องมีอย่างน้อย 1 แพ็กเกจ');
+                    return;
+                }
+                row.remove();
+            });
+            row.append(nameInput, priceInput, remove);
+            container.appendChild(row);
+        }
+
+        function readPackageRows(containerId) {
+            const container = document.getElementById(containerId);
+            const rows = [...container.querySelectorAll('.package-editor-row')];
+            const packages = rows.map(row => ({
+                name: row.querySelector('.package-name').value.trim(),
+                price: Number(row.querySelector('.package-price').value)
+            }));
+            if (!packages.length || packages.some(p => !p.name || !Number.isFinite(p.price) || p.price <= 0)) {
+                throw new Error('กรุณากรอกชื่อและราคาของทุกแพ็กเกจให้ถูกต้อง');
+            }
+            const names = packages.map(p => p.name.toLocaleLowerCase());
+            if (new Set(names).size !== names.length) throw new Error('ชื่อแพ็กเกจห้ามซ้ำกัน');
+            return packages;
+        }
+
+        function openAddProductModal() {
+            const container = document.getElementById('newProductPackages');
+            container.innerHTML = '';
+            addPackageRow('newProductPackages');
+            document.getElementById('addProductModal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.add('hidden');
+        }
+
+        function openEditProductModal(prodId) {
+            const p = db.products.find(x => x.id === prodId);
+            if (!p) return;
+            document.getElementById('editProdTitle').value = p.title || '';
+            document.getElementById('editProdCategory').value = p.category || 'app';
+            document.getElementById('editProdImage').value = p.image || '';
+            const container = document.getElementById('editProductPackages');
+            container.innerHTML = '';
+            (p.packages && p.packages.length ? p.packages : [{name:'',price:''}]).forEach(pkg => addPackageRow('editProductPackages', pkg.name || '', pkg.price ?? ''));
+            document.getElementById('editProductModal').dataset.productId = prodId;
+            document.getElementById('editProductModal').classList.remove('hidden');
+        }
+        function closeEditProductModal() { document.getElementById('editProductModal').classList.add('hidden'); }
+        async function saveEditedProduct() {
+            const modal = document.getElementById('editProductModal');
+            const id = modal.dataset.productId;
+            const title = document.getElementById('editProdTitle').value.trim();
+            const category = document.getElementById('editProdCategory').value;
+            const image = document.getElementById('editProdImage').value.trim();
+            if (!title) { showToast('กรุณากรอกชื่อสินค้า'); return; }
+            let packages;
+            try { packages = readPackageRows('editProductPackages'); }
+            catch (e) { showToast(e.message); return; }
+            try {
+                await apiFetch(`/admin/products/${encodeURIComponent(id)}`, {method:'PUT', body:JSON.stringify({title,category,image,packages})});
+                closeEditProductModal();
+                await refreshFromServer();
+                showToast('แก้ไขสินค้าและแพ็กเกจเรียบร้อยแล้ว');
+            } catch(e) { showToast(e.message || 'แก้ไขสินค้าไม่สำเร็จ'); }
+        }
+
+        function saveNewProduct() {
+            const title = document.getElementById('newProdTitle').value.trim();
+            const cat = document.getElementById('newProdCategory').value;
+            const img = document.getElementById('newProdImage').value.trim() || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop';
+            const pkgName = document.getElementById('newProdPkgName').value.trim() || 'แพ็กเกจเริ่มต้น';
+            const pkgPrice = parseFloat(document.getElementById('newProdPkgPrice').value) || 99;
+
+            if (!title) {
+                showToast('กรุณาระบุชื่อสินค้า');
+                return;
+            }
+
+            const newProd = {
+                id: 'prod-' + Date.now(),
+                title: title,
+                category: cat,
+                image: img,
+                packages: [{ name: pkgName, price: pkgPrice }]
+            };
+
+            db.products.push(newProd);
+            saveDatabase();
+            closeAddProductModal();
+            renderAdminDashboard();
+            showToast('เพิ่มสินค้าใหม่สำเร็จ');
+        }
+
+        function deleteProduct(prodId) {
+            db.products = db.products.filter(p => p.id !== prodId);
+            saveDatabase();
+            renderAdminDashboard();
+            showToast('ลบสินค้าเรียบร้อยแล้ว');
+        }
+
+        function adminAdjustWallet(isAdd) {
+            const input = parseFloat(document.getElementById('adminAdjustWalletInput').value);
+            if (!input || input <= 0) return;
+
+            if (isAdd) db.user.balance += input;
+            else db.user.balance = Math.max(0, db.user.balance - input);
+
+            saveDatabase();
+            showToast(`ปรับยอดเงินสำเร็จ ยอดใหม่: ฿${db.user.balance.toFixed(2)}`);
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto bg-slate-900 border border-mumu-pink text-white text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-2 transition-all transform translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <i class="fa-solid fa-bell text-mumu-cyan"></i>
+                <span>${msg}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    
+let authMode = 'login';
+function openAuthModal(mode='login'){ authMode=mode; updateAuthModal(); document.getElementById('authModal').classList.remove('hidden'); document.getElementById('authEmail').focus(); }
+function closeAuthModal(){ document.getElementById('authModal').classList.add('hidden'); }
+function toggleAuthMode(){ authMode=authMode==='login'?'register':'login'; updateAuthModal(); }
+function updateAuthModal(){
+  const register=authMode==='register';
+  document.getElementById('authTitle').innerText=register?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('authSubtitle').innerText=register?'สร้างบัญชีเพื่อใช้งาน Wallet และสั่งซื้อสินค้า':'เข้าสู่บัญชี MUMU TOPUP-PRIEMIUM ของคุณ';
+  document.getElementById('authNameWrap').classList.toggle('hidden',!register);
+  document.getElementById('authName').required=register;
+  document.getElementById('authSubmit').innerText=register?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('authSwitch').innerText=register?'มีบัญชีแล้ว? เข้าสู่ระบบ':'ยังไม่มีบัญชี? สมัครสมาชิก';
+}
+async function submitAuth(e){
+  e.preventDefault();
+  const payload={email:document.getElementById('authEmail').value.trim(),password:document.getElementById('authPassword').value};
+  if(authMode==='register') payload.name=document.getElementById('authName').value.trim();
+  try{
+    const data=await apiFetch(authMode==='register'?'/auth/register':'/auth/login',{method:'POST',body:JSON.stringify(payload)});
+    db.user=data.user; closeAuthModal(); updateUserUI(); await refreshFromServer();
+    showToast(authMode==='register'?'สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ':'เข้าสู่ระบบสำเร็จ!');
+  }catch(e){
+    const messages={EMAIL_EXISTS:'อีเมลนี้ถูกใช้งานแล้ว',INVALID_CREDENTIALS:'อีเมลหรือรหัสผ่านไม่ถูกต้อง',INVALID_PASSWORD:'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',INVALID_EMAIL:'รูปแบบอีเมลไม่ถูกต้อง',INVALID_NAME:'กรุณากรอกชื่อ 2-80 ตัวอักษร'};
+    showToast(messages[e.message]||'ดำเนินการไม่สำเร็จ');
+  }
+}
+
+async function logoutCustomer(){
+  try {
+    await apiFetch('/auth/logout', { method: 'POST' });
+
+    csrfToken = '';
+    db.user = null;
+    db.orders = [];
+
+    cart = [];
+    try {
+      localStorage.removeItem('mumu_cart');
+    } catch (_) {}
+
+    updateUserUI();
+    renderCustomerProducts();
+    updateCartBadge();
+    renderCart();
+
+    showToast('ออกจากระบบเรียบร้อยแล้ว');
+  } catch (e) {
+    showToast('ออกจากระบบไม่สำเร็จ');
+  }
+}
+
+
+</script>
+</body>
+</html><script>
+/* MUMU REAL MODE: server-backed data layer */
+const API = '/api';
+let csrfToken = '';
+
+async function ensureCsrfToken() {
+  if (csrfToken) return csrfToken;
+
+  const res = await fetch(API + '/bootstrap', {
+    credentials: 'same-origin',
+    cache: 'no-store'
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok || !data.csrfToken) {
+    throw new Error(data.error || 'CSRF_TOKEN_UNAVAILABLE');
+  }
+
+  csrfToken = data.csrfToken;
+  return csrfToken;
+}
+
+async function apiFetch(path, options = {}) {
+  const method = String(options.method || 'GET').toUpperCase();
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    headers['X-CSRF-Token'] = await ensureCsrfToken();
+  }
+
+  const res = await fetch(API + path, {
+    ...options,
+    credentials: 'same-origin',
+    headers
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) throw new Error(data.error || 'REQUEST_FAILED');
+
+  if (path === '/bootstrap' && data.csrfToken) {
+    csrfToken = data.csrfToken;
+  }
+
+  return data;
+}
+function mapOrder(o){return {...o, productTitle:o.product_title||o.productTitle||'', packageName:o.package_name||o.packageName||'', targetAccount:o.target_account||o.targetAccount||'', paymentMethod:o.payment_method||o.paymentMethod||'', deliveredText:o.delivered_text||o.deliveredText||'', createdAt:o.created_at ? new Date(o.created_at).toLocaleString('th-TH') : (o.createdAt||'')};}
+async function loadDatabase(){ return refreshFromServer(); }
+async function refreshFromServer(){
+  const data=await apiFetch('/bootstrap');
+  db.products=data.products; db.orders=data.orders.map(mapOrder); db.transactions=data.transactions||[]; db.deposits=data.deposits||[]; db.adminDeposits=data.adminDeposits||[]; db.adminUsers=data.adminUsers||[]; db.user=data.user || null; db.adminAuth=data.adminAuth; const userCountEl=document.getElementById('adminTotalUsers'); if(userCountEl) userCountEl.textContent=String(data.userCount||0);
+  updateUserUI(); updatePendingBadge(); updateAdminAuthUI();
+  renderCustomerProducts();
+  const adminBtn = document.getElementById('btnAdminView');
+  if (adminBtn && !IS_ADMIN_ROUTE) adminBtn.classList.add('hidden');
+  if (IS_ADMIN_ROUTE) {
+    if (db.adminAuth) switchView('admin');
+    else openAdminLoginModal();
+  } else {
+    closeAdminLoginModal();
+    switchView('customer');
+  }
+}
+window.addEventListener('load', async()=>{
+  try { await refreshFromServer(); }
+  catch(e){ console.error(e); showToast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
+});
+async function handleAdminLogin(e){
+  e.preventDefault();
+  const username=document.getElementById('adminUserAuth').value.trim();
+  const password=document.getElementById('adminPassAuth').value;
+  try { await apiFetch('/admin/login',{method:'POST',body:JSON.stringify({username,password})}); db.adminAuth=true; updateAdminAuthUI(); closeAdminLoginModal(); await refreshFromServer(); switchView('admin'); showToast('เข้าสู่ระบบ Admin สำเร็จ!'); }
+  catch(e){ showToast(e.message==='INVALID_CREDENTIALS'?'Username หรือ Password ไม่ถูกต้อง!':'เข้าสู่ระบบไม่สำเร็จ'); }
+}
+async function adminLogout(){try{await apiFetch('/admin/logout',{method:'POST'});db.adminAuth=false;updateAdminAuthUI();window.location.href='/';showToast('ออกจากระบบ Admin เรียบร้อยแล้ว');}catch(e){showToast('ออกจากระบบไม่สำเร็จ');}}
+function saveDatabase(){ updateUserUI(); updatePendingBadge(); }
+function persistCart(){ try { localStorage.setItem('mumu_cart', JSON.stringify(cart)); } catch (_) {} }
+function cartTotal(){ return cart.reduce((sum,item)=>sum + Number(item.price||0),0); }
+function updateCartBadge(){
+  const badge=document.getElementById('cartBadge');
+  if(!badge) return;
+  const count=cart.length;
+  badge.textContent=String(count);
+  badge.classList.toggle('hidden',count===0);
+  badge.classList.toggle('flex',count>0);
+}
+function renderCart(){
+  const list=document.getElementById('cartItems');
+  const totalEl=document.getElementById('cartTotal');
+  const btn=document.getElementById('cartCheckoutButton');
+  if(!list||!totalEl) return;
+  updateCartBadge();
+  if(!cart.length){
+    list.innerHTML='<div class="text-center py-12"><div class="w-16 h-16 mx-auto rounded-2xl bg-slate-900 text-slate-600 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-cart-shopping"></i></div><div class="text-sm font-bold text-slate-300">ตะกร้ายังว่าง</div><div class="text-xs text-slate-500 mt-1">เลือกสินค้าแล้วกด “เพิ่มลงตะกร้า”</div></div>';
+    totalEl.textContent='฿0.00';
+    if(btn) btn.disabled=true;
+    if(btn) btn.classList.add('opacity-50','cursor-not-allowed');
+    return;
+  }
+  if(btn){btn.disabled=false;btn.classList.remove('opacity-50','cursor-not-allowed');}
+  list.innerHTML='';
+  cart.forEach((item,index)=>{
+    const div=document.createElement('div');
+    div.className='p-4 rounded-2xl bg-slate-950 border border-slate-800';
+    div.innerHTML=`<div class="flex items-start gap-3"><img src="${escapeHtml(item.image||'')}" class="w-14 h-14 rounded-xl object-cover border border-slate-800" onerror="this.style.display='none'"><div class="min-w-0 flex-1"><div class="font-bold text-white text-sm">${escapeHtml(item.productTitle)}</div><div class="text-[11px] text-slate-400 mt-1">${escapeHtml(item.packageName)}</div><div class="text-[11px] text-slate-500 mt-1">ปลายทาง: ${escapeHtml(item.targetAccount)}</div></div><div class="text-right shrink-0"><div class="font-black text-emerald-400">฿${Number(item.price).toFixed(2)}</div><button type="button" onclick="removeFromCart(${index})" class="mt-2 text-[10px] text-red-400 hover:text-red-300 font-bold"><i class="fa-solid fa-trash mr-1"></i>ลบ</button></div></div>`;
+    list.appendChild(div);
+  });
+  totalEl.textContent=`฿${cartTotal().toFixed(2)}`;
+}
+function openCartModal(){
+  if(!db.user){showToast('กรุณาเข้าสู่ระบบก่อนใช้ตะกร้า');openAuthModal('login');return;}
+  renderCart();
+  document.getElementById('cartModal').classList.remove('hidden');
+}
+function closeCartModal(){document.getElementById('cartModal').classList.add('hidden');}
+function addCurrentProductToCart(){
+  if(!db.user){showToast('กรุณาเข้าสู่ระบบก่อน');openAuthModal('login');return;}
+  if(!currentSelectedProd||!currentSelectedPkg){showToast('กรุณาเลือกสินค้าและแพ็กเกจ');return;}
+  const target=document.getElementById('userAccountInput').value.trim();
+  if(!target){showToast('กรุณากรอกข้อมูล ID/Email ผู้ใช้ก่อนเพิ่มลงตะกร้า');return;}
+  cart.push({productId:currentSelectedProd.id,productTitle:currentSelectedProd.title,packageName:currentSelectedPkg.name,price:Number(currentSelectedPkg.price),targetAccount:target,image:currentSelectedProd.image});
+  persistCart();
+  updateCartBadge();
+  closeProductModal();
+  showToast('เพิ่มสินค้าลงตะกร้าแล้ว');
+}
+function removeFromCart(index){
+  cart.splice(index,1);
+  persistCart();
+  renderCart();
+}
+async function checkoutCart(){
+  if(!db.user){showToast('กรุณาเข้าสู่ระบบก่อนชำระเงิน');openAuthModal('login');return;}
+  if(!cart.length){showToast('ตะกร้ายังว่าง');return;}
+  const total=cartTotal();
+  if(Number(db.user.balance||0)<total){showToast('ยอดเงิน Wallet ไม่เพียงพอ กรุณาเติมเงิน');return;}
+  const btn=document.getElementById('cartCheckoutButton');
+  if(btn){btn.disabled=true;btn.classList.add('opacity-50','cursor-not-allowed');}
+  try{
+    const payload=cart.map(item=>({productId:item.productId,packageName:item.packageName,targetAccount:item.targetAccount}));
+    const data=await apiFetch('/orders/cart',{method:'POST',body:JSON.stringify({items:payload})});
+    cart=[];
+    persistCart();
+    closeCartModal();
+    await refreshFromServer();
+    showToast(`สั่งซื้อ ${data.orderIds.length} รายการสำเร็จ หัก Wallet ฿${Number(data.total).toFixed(2)}`);
+  }catch(e){
+    const messages={INSUFFICIENT_BALANCE:'ยอดเงิน Wallet ไม่เพียงพอ กรุณาเติมเงิน',INVALID_CART:'ตะกร้าไม่ถูกต้อง',INVALID_CART_ITEM:'ข้อมูลสินค้าในตะกร้าไม่ถูกต้อง',PACKAGE_NOT_FOUND:'แพ็กเกจสินค้าถูกเปลี่ยนหรือไม่มีแล้ว'};
+    showToast(messages[e.message]||'ชำระตะกร้าไม่สำเร็จ');
+  }finally{
+    if(btn){btn.disabled=false;btn.classList.remove('opacity-50','cursor-not-allowed');}
+    updateCartBadge();
+  }
+}
+
+async function processCustomerCheckout(){
+  if(!db.user){showToast('กรุณาเข้าสู่ระบบก่อนสั่งซื้อ');openAuthModal('login');return;}
+  const acc=document.getElementById('userAccountInput').value.trim();
+  if(!acc){showToast('กรุณากรอกข้อมูล ID/Email ผู้ใช้ก่อนทำรายการ');return;}
+  try{
+    await apiFetch('/orders',{method:'POST',body:JSON.stringify({productId:currentSelectedProd.id,packageName:currentSelectedPkg.name,price:currentSelectedPkg.price,targetAccount:acc,paymentMethod:'wallet'})});
+    await refreshFromServer(); closeProductModal(); showToast('สั่งซื้อสำเร็จ! หักเงินจาก Wallet แล้ว และรอแอดมินดำเนินการ');
+  }catch(e){
+    showToast(e.message==='INSUFFICIENT_BALANCE'?'ยอดเงิน Wallet ไม่เพียงพอ กรุณาเติมเงิน':e.message==='WALLET_ONLY'?'กรุณาชำระผ่าน Wallet':'สั่งซื้อไม่สำเร็จ');
+  }
+}
+async function confirmApproveOrder(){
+  if(!currentAdminTargetOrder)return;
+  const orderId=currentAdminTargetOrder.id;
+  const text=document.getElementById('deliverAccountText').value.trim();
+  try{await apiFetch(`/admin/orders/${encodeURIComponent(orderId)}/complete`,{method:'POST',body:JSON.stringify({deliveredText:text})});closeAdminDeliverModal();await refreshFromServer();showToast(`อนุมัติ/ส่งสินค้า ${orderId} เรียบร้อยแล้ว`);}catch(e){showToast(`ส่งรายการไม่สำเร็จ: ${e.message||'UNKNOWN_ERROR'}`);}
+}
+async function cancelOrder(orderId){try{await apiFetch(`/admin/orders/${encodeURIComponent(orderId)}/cancel`,{method:'POST'});await refreshFromServer();showToast(`ยกเลิกออเดอร์ ${orderId} เรียบร้อย`);}catch(e){showToast(`ยกเลิกรายการไม่สำเร็จ: ${e.message||'UNKNOWN_ERROR'}`);}}
+async function saveNewProduct(){
+  const title=document.getElementById('newProdTitle').value.trim();
+  const category=document.getElementById('newProdCategory').value;
+  const image=document.getElementById('newProdImage').value.trim();
+  if(!title){showToast('กรุณาระบุชื่อสินค้า');return;}
+  let packages;
+  try { packages=readPackageRows('newProductPackages'); }
+  catch(e) { showToast(e.message); return; }
+  try {
+    await apiFetch('/admin/products',{method:'POST',body:JSON.stringify({title,category,image,packages})});
+    closeAddProductModal();
+    document.getElementById('newProdTitle').value='';
+    document.getElementById('newProdImage').value='';
+    await refreshFromServer();
+    showToast('เพิ่มสินค้าใหม่พร้อมแพ็กเกจเรียบร้อยแล้ว');
+  } catch(e) { showToast(e.message || 'เพิ่มสินค้าไม่สำเร็จ'); }
+}
+async function deleteProduct(prodId){try{await apiFetch(`/admin/products/${encodeURIComponent(prodId)}`,{method:'DELETE'});await refreshFromServer();showToast('ลบสินค้าเรียบร้อยแล้ว');}catch(e){showToast('ลบสินค้าไม่สำเร็จ');}}
+async function adminAdjustWallet(isAdd){
+  const userId=document.getElementById('adminUserSelect')?.value;
+  const input=parseFloat(document.getElementById('adminAdjustWalletInput').value);
+  if(!userId){showToast('กรุณาเลือกสมาชิกก่อน');return;}
+  if(!Number.isFinite(input)||input<=0){showToast('กรุณาระบุจำนวนเงินให้ถูกต้อง');return;}
+  try{
+    const data=await apiFetch('/admin/wallet/adjust',{method:'POST',body:JSON.stringify({userId:Number(userId),amount:isAdd?input:-input})});
+    await refreshFromServer();
+    await loadAdminUsers();
+    selectAdminUser(userId);
+    document.getElementById('adminAdjustWalletInput').value='';
+    showToast(isAdd?'เพิ่มเงินให้สมาชิกสำเร็จ':'หักเงินจากสมาชิกสำเร็จ');
+  }catch(e){showToast(e.message==='USER_NOT_FOUND'?'ไม่พบสมาชิก':e.message==='ADMIN_REQUIRED'?'เซสชันแอดมินหมดอายุ กรุณาเข้าสู่ระบบใหม่':'ปรับยอดเงินไม่สำเร็จ');}
+}
+</script>
+
+<script>
+/* MUMU WALLET TOPUP: PromptPay + slip review */
+let lastDepositQrAmount = 0;
+async function previewDepositQR(){
+  const amount=Number(document.getElementById('depositInput')?.value);
+  const box=document.getElementById('depositQrBox');
+  if(!amount || amount<1){ box.classList.add('hidden'); return; }
+  if(amount===lastDepositQrAmount && document.getElementById('depositQrImage').src) { box.classList.remove('hidden'); return; }
+  try{
+    const data=await apiFetch(`/wallet/deposit-qr?amount=${encodeURIComponent(amount)}`);
+    document.getElementById('depositQrImage').src=data.qr;
+    box.classList.remove('hidden'); lastDepositQrAmount=amount;
+  }catch(e){
+    box.classList.add('hidden');
+    document.getElementById('depositStatus').textContent=e.message==='PROMPTPAY_NOT_CONFIGURED'?'ระบบยังไม่ได้ตั้งค่า PromptPay ของร้าน':(e.message==='INVALID_REQUEST'?'ตรวจสอบ PROMPTPAY_ID ในไฟล์ .env':'สร้าง QR ไม่สำเร็จ');
+  }
+}
+async function confirmDeposit(){
+  const amount=Number(document.getElementById('depositInput').value);
+  const slip=document.getElementById('depositSlip').files[0];
+  if(!amount||amount<1){showToast('กรุณาระบุจำนวนเงิน');return;}
+  if(!slip){showToast('กรุณาอัปโหลดสลิป');return;}
+  const fd=new FormData(); fd.append('amount',amount); fd.append('note',document.getElementById('depositNote').value.trim()); fd.append('slip',slip);
+  try{
+    const res=await fetch(API+'/wallet/deposit',{method:'POST',credentials:'same-origin',headers:{'X-CSRF-Token':await ensureCsrfToken()},body:fd});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error||'DEPOSIT_FAILED');
+    await refreshFromServer();
+    document.getElementById('depositInput').value=''; document.getElementById('depositSlip').value=''; document.getElementById('depositNote').value=''; document.getElementById('depositQrBox').classList.add('hidden'); lastDepositQrAmount=0;
+    document.getElementById('depositStatus').textContent=`ส่งรายการ ${data.id} แล้ว รอแอดมินตรวจสอบสลิป`;
+    showToast('ส่งรายการเติมเงินแล้ว รอการตรวจสอบ');
+  }catch(e){
+    const msg={SLIP_REQUIRED:'กรุณาอัปโหลดสลิป',PROMPTPAY_NOT_CONFIGURED:'ร้านยังไม่ได้ตั้งค่า PromptPay',INVALID_AMOUNT:'จำนวนเงินไม่ถูกต้อง'}[e.message]||'ส่งรายการเติมเงินไม่สำเร็จ'; showToast(msg);
+  }
+}
+function renderAdminDeposits(){
+  const tbody=document.getElementById('adminDepositTableBody'); if(!tbody)return;
+  const list=db.adminDeposits||[]; const pending=list.filter(x=>x.status==='pending').length;
+  const badge=document.getElementById('depositPendingBadge'); if(pending){badge.textContent=pending;badge.classList.remove('hidden')}else badge.classList.add('hidden');
+  const pendingIds=new Set(list.filter(d=>d.status==='pending').map(d=>String(d.id)));
+  for(const id of selectedAdminDepositIds) if(!pendingIds.has(id)) selectedAdminDepositIds.delete(id);
+  if(!list.length){tbody.innerHTML='<tr><td colspan="7" class="p-8 text-center text-slate-500">ยังไม่มีรายการเติมเงิน</td></tr>';updateBulkDepositSelectionUI();return;}
+  tbody.innerHTML=list.map(d=>{
+    const status=d.status==='approved'?'<span class="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400">อนุมัติ</span>':d.status==='rejected'?'<span class="px-2 py-1 rounded-lg bg-red-500/10 text-red-400">ปฏิเสธ</span>':'<span class="px-2 py-1 rounded-lg bg-amber-500/10 text-amber-400">รอตรวจ</span>';
+    const action=d.status==='pending'?`<div class="flex gap-2"><button onclick="approveDeposit('${d.id}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold">อนุมัติ</button><button onclick="rejectDeposit('${d.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-500 text-white font-bold">ปฏิเสธ</button></div>`:'-';
+    const slip=d.slip_path?`<a href="${API}/admin/deposits/${encodeURIComponent(d.id)}/slip" target="_blank" rel="noopener" class="text-mumu-cyan underline">ดูสลิป</a>`:'-';
+    const checkbox=d.status==='pending'?`<input type="checkbox" class="admin-deposit-select accent-emerald-400" aria-label="เลือกรายการเติมเงิน ${d.id}" data-deposit-id="${String(d.id).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" ${selectedAdminDepositIds.has(String(d.id))?'checked':''} onchange="toggleDepositSelection(this)">`:'';
+    return `<tr class="hover:bg-slate-900/50"><td class="p-4">${checkbox}</td><td class="p-4 font-mono">${d.id}<div class="text-[10px] text-slate-500">${new Date(d.created_at).toLocaleString('th-TH')}</div></td><td class="p-4">${d.user_name||'-'}<div class="text-[10px] text-slate-500">${d.user_email||''}</div></td><td class="p-4 font-black text-emerald-400">฿${Number(d.amount).toFixed(2)}</td><td class="p-4">${slip}</td><td class="p-4">${status}</td><td class="p-4">${action}</td></tr>`;
+  }).join('');
+  updateBulkDepositSelectionUI();
+}
+function toggleDepositSelection(el){
+  const id=String(el?.dataset?.depositId||''); if(!id)return;
+  if(el.checked) selectedAdminDepositIds.add(id); else selectedAdminDepositIds.delete(id);
+  updateBulkDepositSelectionUI();
+}
+function updateBulkDepositSelectionUI(){
+  const count=document.getElementById('bulkSelectedDepositCount');
+  const button=document.getElementById('bulkApproveDepositsButton');
+  if(count)count.textContent=String(selectedAdminDepositIds.size);
+  if(button)button.disabled=selectedAdminDepositIds.size===0;
+  const all=document.getElementById('selectAllPendingDeposits');
+  const pending=(db.adminDeposits||[]).filter(d=>d.status==='pending');
+  if(all){all.checked=pending.length>0&&pending.every(d=>selectedAdminDepositIds.has(String(d.id)));all.indeterminate=pending.some(d=>selectedAdminDepositIds.has(String(d.id)))&&!all.checked;}
+}
+function toggleSelectAllPendingDeposits(checked){
+  for(const d of (db.adminDeposits||[]).filter(x=>x.status==='pending')){
+    if(checked)selectedAdminDepositIds.add(String(d.id));else selectedAdminDepositIds.delete(String(d.id));
+  }
+  renderAdminDeposits();
+}
+async function bulkApproveDeposits(){
+  const selected=(db.adminDeposits||[]).filter(d=>d.status==='pending'&&selectedAdminDepositIds.has(String(d.id)));
+  if(!selected.length){showToast('กรุณาเลือกรายการเติมเงินที่รอตรวจ');return;}
+  const total=selected.reduce((sum,d)=>sum+Number(d.amount||0),0);
+  if(!confirm(`ยืนยันอนุมัติรายการเติมเงิน ${selected.length} รายการ รวม ฿${total.toFixed(2)}? ระบบจะเพิ่มเงินให้บัญชีเจ้าของแต่ละรายการเท่านั้น และตรวจสลิปก่อนยืนยัน`))return;
+  const btn=document.getElementById('bulkApproveDepositsButton');if(btn)btn.disabled=true;
+  try{
+    const ids=selected.map(d=>String(d.id));
+    const result=await apiFetch('/admin/deposits/bulk-approve',{method:'POST',body:JSON.stringify({depositIds:ids})});
+    for(const id of result.approved||ids)selectedAdminDepositIds.delete(String(id));
+    await refreshFromServer();
+    showToast(`อนุมัติเติมเงิน ${result.count||ids.length} รายการเรียบร้อยแล้ว`);
+  }catch(e){showToast(e.message==='DEPOSIT_NOT_FOUND_OR_NOT_PENDING'?'มีรายการถูกดำเนินการไปแล้ว กรุณารีเฟรชแล้วเลือกใหม่':`อนุมัติเติมเงินหลายรายการไม่สำเร็จ: ${e.message||'UNKNOWN_ERROR'}`);}
+  finally{updateBulkDepositSelectionUI();}
+}
+async function approveDeposit(id){
+  if(!confirm('ตรวจสอบสลิปและยอดโอนแล้วใช่หรือไม่? เงินจะเข้า Wallet ทันที'))return;
+  try{await apiFetch(`/admin/deposits/${encodeURIComponent(id)}/approve`,{method:'POST'});await refreshFromServer();showToast('อนุมัติเติมเงินและเพิ่มยอด Wallet แล้ว');}catch(e){showToast('อนุมัติไม่สำเร็จ');}
+}
+async function rejectDeposit(id){
+  if(!confirm('ยืนยันปฏิเสธรายการเติมเงินนี้?'))return;
+  try{await apiFetch(`/admin/deposits/${encodeURIComponent(id)}/reject`,{method:'POST'});await refreshFromServer();showToast('ปฏิเสธรายการแล้ว');}catch(e){showToast('ปฏิเสธไม่สำเร็จ');}
+}
+</script>

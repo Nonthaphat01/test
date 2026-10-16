@@ -1,0 +1,20 @@
+{
+  "name": "mumu-topup-real",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cookie-session": "^2.1.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.7.1",
+    "multer": "^1.4.5-lts.1",
+    "promptpay-qr": "^0.5.0",
+    "qrcode": "^1.5.4"
+  }
+}
