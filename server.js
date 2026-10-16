@@ -43,11 +43,11 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 // Listen on all network interfaces so trusted devices on the same local Wi-Fi (e.g. an iPad) can reach the dev server.
 const HOST = process.env.HOST || '0.0.0.0';
-const DATA_DIR = path.join(__dirname, 'data');
+// ถ้าอยู่บน Vercel ให้ย้ายไปเก็บที่ /tmp เพื่อให้สามารถเขียนฐานข้อมูลและไฟล์ได้
+const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new Database(path.join(DATA_DIR, 'mumu.db'));
 
-// ปรับปรุง Path ของ SLIP_DIR ให้รองรับ Vercel Serverless (/tmp)
 const SLIP_DIR = process.env.VERCEL ? path.join('/tmp', 'slips') : path.join(DATA_DIR, 'slips');
 fs.mkdirSync(SLIP_DIR, { recursive: true });
 
