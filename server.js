@@ -46,7 +46,9 @@ const HOST = process.env.HOST || '0.0.0.0';
 const DATA_DIR = path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new Database(path.join(DATA_DIR, 'mumu.db'));
-const SLIP_DIR = path.join(DATA_DIR, 'slips');
+
+// ปรับปรุง Path ของ SLIP_DIR ให้รองรับ Vercel Serverless (/tmp)
+const SLIP_DIR = process.env.VERCEL ? path.join('/tmp', 'slips') : path.join(DATA_DIR, 'slips');
 fs.mkdirSync(SLIP_DIR, { recursive: true });
 
 db.pragma('journal_mode = WAL');
