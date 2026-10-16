@@ -3,6 +3,7 @@ const { rateLimit } = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+
 // Load .env automatically so PROMPTPAY_ID works when running `npm start`.
 const ENV_FILE = path.join(__dirname, '.env');
 if (fs.existsSync(ENV_FILE)) {
@@ -39,89 +40,106 @@ const adminLoginLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'TOO_MANY_LOGIN_ATTEMPTS' }
 });
+
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
-// Listen on all network interfaces so trusted devices on the same local Wi-Fi (e.g. an iPad) can reach the dev server.
 const HOST = process.env.HOST || '0.0.0.0';
-// --- แก้ไขตรงจุดนี้ให้เป็น ternary เพื่อแยก Vercel กับ Local ---
+
+// กำหนดพาร์ธสำหรับเก็บข้อมูลและสลิป (ใช้ /tmp บน Vercel เพื่อแก้ปัญหา Read-only)
 const DATA_DIR = process.env.VERCEL ? path.join('/tmp', 'data') : path.join(__dirname, 'data');
-fs.mkdirSync(DATA_DIR, { recursive: true });
-const db = new Database(path.join(DATA_DIR, 'mumu.db'));
-
 const SLIP_DIR = process.env.VERCEL ? path.join('/tmp', 'slips') : path.join(DATA_DIR, 'slips');
-fs.mkdirSync(SLIP_DIR, { recursive: true });
 
-db.pragma('journal_mode = WAL');
-db.exec(`
-CREATE TABLE IF NOT EXISTS products (
-  id TEXT PRIMARY KEY, title TEXT NOT NULL, category TEXT NOT NULL,
-  image TEXT NOT NULL, packages_json TEXT NOT NULL, created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS orders (
-  id TEXT PRIMARY KEY, user_id INTEGER, product_id TEXT, product_title TEXT NOT NULL,
-  package_name TEXT NOT NULL, target_account TEXT NOT NULL, price REAL NOT NULL,
-  payment_method TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
-  delivered_text TEXT DEFAULT '', created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT UNIQUE, password_hash TEXT, balance REAL NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT ''
-);
-CREATE TABLE IF NOT EXISTS admin_users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS wallet_transactions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, type TEXT NOT NULL, amount REAL NOT NULL, balance_after REAL NOT NULL, reference_id TEXT DEFAULT '', description TEXT NOT NULL, created_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS deposit_requests (
-  id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, amount REAL NOT NULL, status TEXT NOT NULL DEFAULT 'pending', slip_path TEXT DEFAULT '', note TEXT DEFAULT '', created_at TEXT NOT NULL, reviewed_at TEXT DEFAULT ''
-);
-`);
+// ระบบ Lazy Initialization ป้องกันปัญหา SIGABRT บน Serverless
+let _db = null;
+function getDb() {
+  if (!_db) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.mkdirSync(SLIP_DIR, { recursive: true });
+    
+    _db = new Database(path.join(DATA_DIR, 'mumu.db'));
+    _db.pragma('journal_mode = WAL');
+    
+    _db.exec(`
+      CREATE TABLE IF NOT EXISTS products (
+        id TEXT PRIMARY KEY, title TEXT NOT NULL, category TEXT NOT NULL,
+        image TEXT NOT NULL, packages_json TEXT NOT NULL, created_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS orders (
+        id TEXT PRIMARY KEY, user_id INTEGER, product_id TEXT, product_title TEXT NOT NULL,
+        package_name TEXT NOT NULL, target_account TEXT NOT NULL, price REAL NOT NULL,
+        payment_method TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending',
+        delivered_text TEXT DEFAULT '', created_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT UNIQUE, password_hash TEXT, balance REAL NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT ''
+      );
+      CREATE TABLE IF NOT EXISTS admin_users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS wallet_transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, type TEXT NOT NULL, amount REAL NOT NULL, balance_after REAL NOT NULL, reference_id TEXT DEFAULT '', description TEXT NOT NULL, created_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS deposit_requests (
+        id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, amount REAL NOT NULL, status TEXT NOT NULL DEFAULT 'pending', slip_path TEXT DEFAULT '', note TEXT DEFAULT '', created_at TEXT NOT NULL, reviewed_at TEXT DEFAULT ''
+      );
+    `);
 
-const seedProducts = [
-  ['prod-netflix','Netflix Premium 4K','app','https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'1 จอ (30 วัน) 4K Ultra HD',price:129},{name:'เหมาจอส่วนตัว (30 วัน)',price:429}])],
-  ['prod-valorant','Valorant Points (VP)','game','https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'475 VP',price:150},{name:'1,000 VP',price:300},{name:'2,050 VP',price:600}])],
-  ['prod-youtube','YouTube Premium','app','https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'Family Plan (1 เดือน)',price:45},{name:'Family Plan (3 เดือน)',price:125}])],
-  ['prod-freefire','Free Fire Diamonds','game','https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'100 Diamonds',price:35},{name:'520 Diamonds',price:160}])]
-];
-const insertProduct = db.prepare('INSERT OR IGNORE INTO products (id,title,category,image,packages_json,created_at) VALUES (?,?,?,?,?,?)');
-for (const p of seedProducts) insertProduct.run(...p, new Date().toISOString());
-// Safe migrations for databases created by older MUMU versions.
-function addColumnIfMissing(table, column, definition){
-  const cols = db.prepare(`PRAGMA table_info(${table})`).all().map(x=>x.name);
-  if(!cols.includes(column)) { try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`); } catch(e) {} }
+    const seedProducts = [
+      ['prod-netflix','Netflix Premium 4K','app','https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'1 จอ (30 วัน) 4K Ultra HD',price:129},{name:'เหมาจอส่วนตัว (30 วัน)',price:429}])],
+      ['prod-valorant','Valorant Points (VP)','game','https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'475 VP',price:150},{name:'1,000 VP',price:300},{name:'2,050 VP',price:600}])],
+      ['prod-youtube','YouTube Premium','app','https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'Family Plan (1 เดือน)',price:45},{name:'Family Plan (3 เดือน)',price:125}])],
+      ['prod-freefire','Free Fire Diamonds','game','https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400&auto=format&fit=crop',JSON.stringify([{name:'100 Diamonds',price:35},{name:'520 Diamonds',price:160}])]
+    ];
+    const insertProduct = _db.prepare('INSERT OR IGNORE INTO products (id,title,category,image,packages_json,created_at) VALUES (?,?,?,?,?,?)');
+    for (const p of seedProducts) insertProduct.run(...p, new Date().toISOString());
+
+    function addColumnIfMissing(table, column, definition){
+      const cols = _db.prepare(`PRAGMA table_info(${table})`).all().map(x=>x.name);
+      if(!cols.includes(column)) { try { _db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`); } catch(e) {} }
+    }
+    addColumnIfMissing('orders','user_id','INTEGER');
+    addColumnIfMissing('orders','product_id','TEXT');
+    addColumnIfMissing('orders','product_title',"TEXT NOT NULL DEFAULT ''");
+    addColumnIfMissing('orders','package_name',"TEXT NOT NULL DEFAULT ''");
+    addColumnIfMissing('orders','target_account',"TEXT NOT NULL DEFAULT ''");
+    addColumnIfMissing('orders','price','REAL NOT NULL DEFAULT 0');
+    addColumnIfMissing('orders','payment_method',"TEXT NOT NULL DEFAULT 'wallet'");
+    addColumnIfMissing('orders','status',"TEXT NOT NULL DEFAULT 'pending'");
+    addColumnIfMissing('orders','delivered_text',"TEXT DEFAULT ''");
+    addColumnIfMissing('orders','created_at',"TEXT NOT NULL DEFAULT ''");
+    addColumnIfMissing('users','email','TEXT');
+    addColumnIfMissing('users','password_hash','TEXT');
+    addColumnIfMissing('users','created_at',"TEXT NOT NULL DEFAULT ''");
+
+    _db.prepare("DELETE FROM users WHERE id=1 AND name='Demo Customer' AND (email IS NULL OR email='')").run();
+    
+    const adminUser = String(process.env.ADMIN_USERNAME || 'admin').trim();
+    const adminPass = String(process.env.ADMIN_PASSWORD || 'change-me-now');
+    const existingAdmin = _db.prepare('SELECT id FROM admin_users WHERE username=?').get(adminUser);
+    if (!existingAdmin) {
+      _db.prepare('INSERT INTO admin_users (username,password_hash) VALUES (?,?)').run(adminUser, bcrypt.hashSync(adminPass, 12));
+    } else if (process.env.ADMIN_PASSWORD) {
+      _db.prepare('UPDATE admin_users SET password_hash=? WHERE username=?').run(bcrypt.hashSync(adminPass, 12), adminUser);
+    }
+  }
+  return _db;
 }
-addColumnIfMissing('orders','user_id','INTEGER');
-addColumnIfMissing('orders','product_id','TEXT');
-addColumnIfMissing('orders','product_title',"TEXT NOT NULL DEFAULT ''");
-addColumnIfMissing('orders','package_name',"TEXT NOT NULL DEFAULT ''");
-addColumnIfMissing('orders','target_account',"TEXT NOT NULL DEFAULT ''");
-addColumnIfMissing('orders','price','REAL NOT NULL DEFAULT 0');
-addColumnIfMissing('orders','payment_method',"TEXT NOT NULL DEFAULT 'wallet'");
-addColumnIfMissing('orders','status',"TEXT NOT NULL DEFAULT 'pending'");
-addColumnIfMissing('orders','delivered_text',"TEXT DEFAULT ''");
-addColumnIfMissing('orders','created_at',"TEXT NOT NULL DEFAULT ''");
-addColumnIfMissing('users','email','TEXT');
-addColumnIfMissing('users','password_hash','TEXT');
-addColumnIfMissing('users','created_at',"TEXT NOT NULL DEFAULT ''");
-// Do not seed demo customers. Real users are created only through /api/auth/register.
-// Remove the legacy demo customer from older databases, but never remove a real registered account.
-db.prepare("DELETE FROM users WHERE id=1 AND name='Demo Customer' AND (email IS NULL OR email='')").run();
-const adminUser = String(process.env.ADMIN_USERNAME || 'admin').trim();
-const adminPass = String(process.env.ADMIN_PASSWORD || 'change-me-now');
-const existingAdmin = db.prepare('SELECT id FROM admin_users WHERE username=?').get(adminUser);
-if (!existingAdmin) {
-  db.prepare('INSERT INTO admin_users (username,password_hash) VALUES (?,?)').run(adminUser, bcrypt.hashSync(adminPass, 12));
-} else if (process.env.ADMIN_PASSWORD) {
-  // A configured .env password is authoritative. This also provides a safe local
-  // recovery path when an older database contains an unknown admin password.
-  db.prepare('UPDATE admin_users SET password_hash=? WHERE username=?').run(bcrypt.hashSync(adminPass, 12), adminUser);
-}
+
+// สร้าง Proxy สำหรับเชื่อมต่อฐานข้อมูลโดยไม่ต้องแก้โค้ดด้านล่าง
+const db = new Proxy({}, {
+  get(_, prop) {
+    const database = getDb();
+    const value = database[prop];
+    return typeof value === 'function' ? value.bind(database) : value;
+  }
+});
 
 app.use(express.json({limit:'100kb'}));
 const uploadSlip = multer({ storage: multer.diskStorage({
   destination: (_, __, cb) => cb(null, SLIP_DIR),
   filename: (_, file, cb) => cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${path.extname(file.originalname).toLowerCase()}`)
 }), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_, file, cb) => cb(null, /^image\/(jpeg|png|webp)$/.test(file.mimetype)) });
+
 if (
   !process.env.SESSION_SECRET ||
   process.env.SESSION_SECRET === 'dev-only-change-me'
@@ -130,6 +148,7 @@ if (
 }
 
 app.use(cookieSession({name:'mumu_session', keys:[process.env.SESSION_SECRET || 'dev-only-change-me'], httpOnly:true, sameSite:'lax', secure:process.env.NODE_ENV === 'production', maxAge: 7*24*60*60*1000}));
+
 function getCsrfToken(req) {
   if (!req.session.csrfToken) {
     req.session.csrfToken = crypto.randomBytes(32).toString('hex');
@@ -139,28 +158,22 @@ function getCsrfToken(req) {
 
 function csrfProtection(req, res, next) {
   if (!req.path.startsWith('/api/')) return next();
-
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method.toUpperCase())) {
     return next();
   }
-
   const expected = req.session?.csrfToken;
   const provided = req.get('X-CSRF-Token');
-
   if (typeof expected !== 'string' || typeof provided !== 'string') {
     return res.status(403).json({ error: 'CSRF_INVALID' });
   }
-
   const expectedBuffer = Buffer.from(expected);
   const providedBuffer = Buffer.from(provided);
-
   if (
     expectedBuffer.length !== providedBuffer.length ||
     !crypto.timingSafeEqual(expectedBuffer, providedBuffer)
   ) {
     return res.status(403).json({ error: 'CSRF_INVALID' });
   }
-
   next();
 }
 
@@ -173,6 +186,7 @@ function orders(userId){ return userId ? db.prepare('SELECT * FROM orders WHERE 
 function user(userId){ return userId ? db.prepare('SELECT id,name,email,balance FROM users WHERE id=?').get(userId) : null; }
 function transactions(userId){ return userId ? db.prepare('SELECT * FROM wallet_transactions WHERE user_id=? ORDER BY id DESC').all(userId) : []; }
 function deposits(userId){ return userId ? db.prepare('SELECT * FROM deposit_requests WHERE user_id=? ORDER BY created_at DESC').all(userId) : db.prepare('SELECT d.*, u.name AS user_name, u.email AS user_email FROM deposit_requests d JOIN users u ON u.id=d.user_id ORDER BY d.created_at DESC').all(); }
+
 app.get('/api/bootstrap',(req,res)=>{
   res.set('Cache-Control','no-store');
   const u=user(req.session.user?.id);
@@ -182,6 +196,7 @@ app.get('/api/bootstrap',(req,res)=>{
   const visibleOrders=isAdmin ? db.prepare('SELECT o.*, u.name AS user_name, u.email AS user_email FROM orders o LEFT JOIN users u ON u.id=o.user_id ORDER BY o.rowid DESC').all() : (u ? orders(u.id) : []);
   res.json({csrfToken:getCsrfToken(req), products:products(), orders:visibleOrders, transactions:u?transactions(u.id):[], deposits:u?deposits(u.id):[], adminDeposits:isAdmin?deposits():[], adminUsers, user:u, userAuth:!!u, adminAuth:isAdmin, userCount});
 });
+
 app.post('/api/auth/register',(req,res)=>{
   const name=String(req.body?.name||'').trim(), email=String(req.body?.email||'').trim().toLowerCase(), password=String(req.body?.password||'');
   if(name.length<2 || name.length>80) return res.status(400).json({error:'INVALID_NAME'});
@@ -191,8 +206,10 @@ app.post('/api/auth/register',(req,res)=>{
   const info=db.prepare('INSERT INTO users (name,email,password_hash,balance,created_at) VALUES (?,?,?,?,?)').run(name,email,bcrypt.hashSync(password,12),0,new Date().toISOString());
   req.session.user={id:info.lastInsertRowid,email}; res.status(201).json({ok:true,user:user(Number(info.lastInsertRowid))});
 });
+
 app.post('/api/auth/login', userLoginLimiter, (req,res)=>{
  const email=String(req.body?.email||'').trim().toLowerCase(), password=String(req.body?.password||''); const row=db.prepare('SELECT * FROM users WHERE email=?').get(email); if(!row || !row.password_hash || !bcrypt.compareSync(password,row.password_hash)) return res.status(401).json({error:'INVALID_CREDENTIALS'}); req.session.user={id:row.id,email:row.email}; res.json({ok:true,user:user(row.id)}); });
+
 app.post('/api/auth/change-password',requireUser,(req,res)=>{
   const currentPassword=String(req.body?.currentPassword||'');
   const newPassword=String(req.body?.newPassword||'');
@@ -201,9 +218,9 @@ app.post('/api/auth/change-password',requireUser,(req,res)=>{
   const row=db.prepare('SELECT id,password_hash FROM users WHERE id=?').get(req.session.user.id);
   if(!row || !row.password_hash || !bcrypt.compareSync(currentPassword,row.password_hash)) return res.status(400).json({error:'INVALID_CURRENT_PASSWORD'});
   db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(bcrypt.hashSync(newPassword,12),row.id);
-  // Keep the current authenticated session active; other sessions are not centrally tracked by this app.
   res.set('Cache-Control','no-store').json({ok:true});
 });
+
 app.post('/api/auth/logout',(req,res)=>{ const admin=req.session.admin; req.session=null; if(admin) req.session={admin}; res.json({ok:true}); });
 
 app.post('/api/admin/login', adminLoginLimiter, (req,res)=>{
@@ -214,6 +231,7 @@ app.post('/api/admin/login', adminLoginLimiter, (req,res)=>{
   if(!row || !bcrypt.compareSync(password,row.password_hash)) return res.status(401).json({error:'INVALID_CREDENTIALS'});
   req.session.admin={id:row.id,username:row.username}; res.json({ok:true});
 });
+
 app.post('/api/admin/logout',(req,res)=>{req.session=null;res.json({ok:true});});
 
 app.post('/api/orders',requireUser,(req,res)=>{
@@ -295,7 +313,6 @@ app.post('/api/orders/cart',requireUser,(req,res)=>{
   }
 });
 
-
 const PROMPTPAY_ID = String(process.env.PROMPTPAY_ID || '').replace(/[^0-9]/g, '');
 app.post('/api/wallet/deposit', requireUser, uploadSlip.single('slip'), async (req,res)=>{
   try {
@@ -311,10 +328,12 @@ app.post('/api/wallet/deposit', requireUser, uploadSlip.single('slip'), async (r
     res.status(201).json({ok:true,id,amount,qr:qrDataUrl,promptpayId:PROMPTPAY_ID});
   } catch(e){ if(req.file) try{fs.unlinkSync(path.join(SLIP_DIR,req.file.filename));}catch(_){}; res.status(500).json({error:'DEPOSIT_CREATE_FAILED'}); }
 });
+
 app.get('/api/wallet/deposit-qr', requireUser, async (req,res)=>{
   const amount=Number(req.query?.amount); if(!PROMPTPAY_ID||!Number.isFinite(amount)||amount<1||amount>100000) return res.status(400).json({error:'INVALID_REQUEST'});
   try { const payload=generatePromptPayPayload(PROMPTPAY_ID,{amount}); const qr=await QRCode.toDataURL(payload,{width:320,margin:2}); res.json({qr,promptpayId:PROMPTPAY_ID,amount}); } catch(e){ console.error('PromptPay QR error:', e); res.status(500).json({error:'QR_FAILED'}); }
 });
+
 app.get('/api/admin/deposits/:id/slip', requireAdmin, (req,res)=>{
   const d=db.prepare('SELECT slip_path FROM deposit_requests WHERE id=?').get(req.params.id);
   if(!d || !d.slip_path) return res.status(404).send('Slip not found');
@@ -323,6 +342,7 @@ app.get('/api/admin/deposits/:id/slip', requireAdmin, (req,res)=>{
   if(!fs.existsSync(full)) return res.status(404).send('Slip not found');
   res.sendFile(full);
 });
+
 app.post('/api/admin/deposits/:id/approve', requireAdmin, (req,res)=>{
   const tx=db.transaction(()=>{
     const d=db.prepare('SELECT * FROM deposit_requests WHERE id=?').get(req.params.id);
@@ -335,10 +355,12 @@ app.post('/api/admin/deposits/:id/approve', requireAdmin, (req,res)=>{
   });
   try{tx();res.json({ok:true});}catch(e){res.status(400).json({error:e.message});}
 });
+
 app.post('/api/admin/deposits/:id/reject', requireAdmin, (req,res)=>{
   const r=db.prepare("UPDATE deposit_requests SET status='rejected',reviewed_at=? WHERE id=? AND status='pending'").run(new Date().toISOString(),req.params.id);
   if(!r.changes)return res.status(404).json({error:'DEPOSIT_NOT_FOUND_OR_NOT_PENDING'});res.json({ok:true});
 });
+
 app.post('/api/admin/deposits/bulk-approve', requireAdmin, (req,res)=>{
   const rawIds=req.body?.depositIds;
   if(!Array.isArray(rawIds) || rawIds.length<1 || rawIds.length>100) return res.status(400).json({error:'INVALID_DEPOSIT_IDS'});
@@ -374,6 +396,7 @@ app.post('/api/admin/deposits/bulk-approve', requireAdmin, (req,res)=>{
     res.status(notPending?409:400).json({error:notPending?'DEPOSIT_NOT_FOUND_OR_NOT_PENDING':(String(e.message||'').startsWith('USER_NOT_FOUND')?'USER_NOT_FOUND':'DEPOSIT_BULK_APPROVE_FAILED')});
   }
 });
+
 app.post('/api/admin/orders/bulk-complete', requireAdmin, (req,res)=>{
   const rawIds = req.body?.orderIds;
   const deliveredTexts = req.body?.deliveredTexts;
@@ -422,6 +445,7 @@ app.post('/api/admin/orders/:id/complete',requireAdmin,(req,res)=>{
     res.json({ok:true,order:db.prepare('SELECT * FROM orders WHERE id=?').get(orderId)});
   } catch(e) { console.error('Complete order error:',e); res.status(500).json({error:'ORDER_COMPLETE_FAILED'}); }
 });
+
 app.post('/api/admin/orders/:id/cancel',requireAdmin,(req,res)=>{
   const orderId=String(req.params.id||'');
   try {
@@ -460,6 +484,7 @@ function normalizeProductPackages(input, legacyName, legacyPrice) {
   if (new Set(names).size !== names.length) throw new Error('DUPLICATE_PACKAGE_NAME');
   return packages;
 }
+
 app.post('/api/admin/products',requireAdmin,(req,res)=>{
   const {title,category,image,packageName,packagePrice,packages:packageInput}=req.body||{};
   const cleanTitle=String(title||'').trim();
@@ -471,6 +496,7 @@ app.post('/api/admin/products',requireAdmin,(req,res)=>{
   db.prepare('INSERT INTO products VALUES (?,?,?,?,?,?)').run(id,cleanTitle,category,String(image||'').trim()||'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&auto=format&fit=crop',JSON.stringify(packages),new Date().toISOString());
   res.status(201).json({ok:true,id});
 });
+
 app.put('/api/admin/products/:id',requireAdmin,(req,res)=>{
   const {title,category,image,packageName,packagePrice,packages:packageInput}=req.body||{};
   const cleanTitle=String(title||'').trim();
@@ -487,7 +513,9 @@ app.put('/api/admin/products/:id',requireAdmin,(req,res)=>{
   );
   res.json({ok:true});
 });
+
 app.delete('/api/admin/products/:id',requireAdmin,(req,res)=>{const r=db.prepare('DELETE FROM products WHERE id=?').run(req.params.id);if(!r.changes)return res.status(404).json({error:'PRODUCT_NOT_FOUND'});res.json({ok:true});});
+
 app.get('/api/admin/users',requireAdmin,(req,res)=>{
     res.set('Cache-Control','no-store');
   try {
@@ -498,6 +526,7 @@ app.get('/api/admin/users',requireAdmin,(req,res)=>{
     res.status(500).json({error:'ADMIN_USERS_FAILED'});
   }
 });
+
 app.post('/api/admin/wallet/adjust',requireAdmin,(req,res)=>{
   const userId=Number(req.body?.userId);
   const amount=Number(req.body?.amount);
@@ -506,9 +535,9 @@ app.post('/api/admin/wallet/adjust',requireAdmin,(req,res)=>{
     const u=user(userId);
     if(!u) throw new Error('USER_NOT_FOUND');
     const newBalance=Number(u.balance)+amount;
-if(amount<0 && newBalance<0) {
-  throw new Error('INSUFFICIENT_BALANCE');
-}
+    if(amount<0 && newBalance<0) {
+      throw new Error('INSUFFICIENT_BALANCE');
+    }
     db.prepare('UPDATE users SET balance=? WHERE id=?').run(newBalance,userId);
     db.prepare('INSERT INTO wallet_transactions (user_id,type,amount,balance_after,reference_id,description,created_at) VALUES (?,?,?,?,?,?,?)')
       .run(userId,amount>0?'credit':'debit',amount,newBalance,'ADMIN-ADJUST','ปรับยอด Wallet โดยแอดมิน',new Date().toISOString());
@@ -518,8 +547,14 @@ if(amount<0 && newBalance<0) {
 });
 
 app.get('/api/health',(req,res)=>res.json({ok:true,service:'mumu-topup',time:new Date().toISOString()}));
-// Serve the same UI at /admin, while the frontend switches into the private admin area.
+
 app.get('/admin',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 app.use(express.static(path.join(__dirname,'public')));
 app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.listen(PORT, HOST, ()=>console.log(`Mumu Topup-Premium Store\nServer listening on ${HOST}:${PORT}\nOn this PC: http://localhost:${PORT}\nOn another device on the same Wi-Fi: use this PC's IPv4 address, e.g. http://192.168.1.10:${PORT}`));
+
+// รองรับทั้งรันบน Local และ Vercel Serverless
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, HOST, ()=>console.log(`Mumu Topup-Premium Store\nServer listening on ${HOST}:${PORT}\nOn this PC: http://localhost:${PORT}`));
+}
+
+module.exports = app;
