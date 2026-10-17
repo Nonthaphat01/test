@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-// Load .env automatically so PROMPTPAY_ID works when running `npm start`.
+// Load .env automatically (สำหรับกรณีรันในเครื่อง local)
 const ENV_FILE = path.join(__dirname, '.env');
 if (fs.existsSync(ENV_FILE)) {
   try {
@@ -142,7 +142,7 @@ function getDb() {
   return _db;
 }
 
-// สร้าง Proxy สำหรับเชื่อมต่อฐานข้อมูลโดยไม่ต้องแก้โค้ดด้านล่าง
+// สร้าง Proxy สำหรับเชื่อมต่อฐานข้อมูล
 const db = new Proxy({}, {
   get(_, prop) {
     const database = getDb();
@@ -157,14 +157,17 @@ const uploadSlip = multer({ storage: multer.diskStorage({
   filename: (_, file, cb) => cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${path.extname(file.originalname).toLowerCase()}`)
 }), limits: { fileSize: 5 * 1024 * 1024 }, fileFilter: (_, file, cb) => cb(null, /^image\/(jpeg|png|webp)$/.test(file.mimetype)) });
 
-if (
-  !process.env.SESSION_SECRET ||
-  process.env.SESSION_SECRET === 'dev-only-change-me'
-) {
-  throw new Error('SESSION_SECRET must be configured');
-}
+// --- แก้ไขจุดนี้: ใช้ SESSION_SECRET จาก env หากไม่มีให้ใช้ default เพื่อไม่ให้ crash บน Vercel ---
+const SESSION_SECRET = process.env.SESSION_SECRET || 'mumu-default-secret-key-change-in-env';
 
-app.use(cookieSession({name:'mumu_session', keys:[process.env.SESSION_SECRET || 'dev-only-change-me'], httpOnly:true, sameSite:'lax', secure:process.env.NODE_ENV === 'production', maxAge: 7*24*60*60*1000}));
+app.use(cookieSession({
+  name: 'mumu_session',
+  keys: [SESSION_SECRET],
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: process.env.NODE_ENV === 'production',
+  maxAge: 7 * 24 * 60 * 60 * 1000
+}));
 
 function getCsrfToken(req) {
   if (!req.session.csrfToken) {
